@@ -12,6 +12,9 @@
             <argument key="name">Creode Server Monitor Tool</argument>
             <argument key="version">@package_version@</argument>
 
+            <call method="add">
+                <argument type="service" id="csmt.self_update_command" />
+            </call>
 
             <call method="add">
                 <argument type="service" id="csmt.version" />
@@ -21,6 +24,10 @@
 
 
         <!-- Command classes -->
+
+        <service id="csmt.self_update_command"
+            class="Creode\Csmt\Command\Csmt\UpdateCommand">
+        </service>
 
         <service id="csmt.version" class="Creode\Csmt\Command\VersionCommand">
             <!-- <argument type="service" id="csmt.config" /> -->
