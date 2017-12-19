@@ -1,0 +1,44 @@
+<?xml version="1.0" ?>
+
+<container xmlns="http://symfony.com/schema/dic/services"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
+    <services>
+
+        <!-- App creation and adding command -->
+
+        <service id="symfony.application"
+            class="Symfony\Component\Console\Application">
+            <argument key="name">Creode Server Monitor Tool</argument>
+            <argument key="version">@package_version@</argument>
+
+
+            <call method="add">
+                <argument type="service" id="csmt.version" />
+            </call>
+        </service>
+
+
+
+        <!-- Command classes -->
+
+        <service id="csmt.version" class="Creode\Csmt\Command\VersionCommand">
+            <!-- <argument type="service" id="csmt.config" /> -->
+        </service>
+
+
+        <!-- Raw symfony components -->
+
+        <service id="symfony.console_output"
+            class="Symfony\Component\Console\Output\ConsoleOutput">
+        </service>
+
+        <service id="symfony.filesystem"
+            class="Symfony\Component\Filesystem\Filesystem">
+        </service>
+
+        <service id="symfony.finder"
+            class="Symfony\Component\Finder\Finder">
+        </service>
+    </services>
+</container>
