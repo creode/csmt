@@ -29,9 +29,7 @@ git add docs/downloads
 #
 git commit -m "Add version ${TAG}"
 
-#
-# Go back to master
-#
+git push
 git push --tags
 echo "New version created."
 
