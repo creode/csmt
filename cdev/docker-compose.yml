@@ -1,3 +1,0 @@
-version: '2'
-services:
-    php: { container_name: tool_php, ports: ['3099:80'], environment: { VIRTUAL_HOST: .tool.docker }, volumes: ['../src:/var/www/html'], image: 'creode/php-apache:7.0' }
