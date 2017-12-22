@@ -17,7 +17,11 @@
             </call>
 
             <call method="add">
-                <argument type="service" id="csmt.version" />
+                <argument type="service" id="csmt.snapshot_database" />
+            </call>
+
+            <call method="add">
+                <argument type="service" id="csmt.snapshot_filesystem" />
             </call>
         </service>
 
@@ -29,9 +33,48 @@
             class="Creode\Csmt\Command\Csmt\UpdateCommand">
         </service>
 
-        <service id="csmt.version" class="Creode\Csmt\Command\VersionCommand">
-            <!-- <argument type="service" id="csmt.config" /> -->
+        <service id="csmt.snapshot_database" class="Creode\Csmt\Command\Snapshot\Database\SnapshotCommand">
+            <argument type="service" id="csmt.config" />
+            <argument type="service" id="csmt.storage_awss3" />
+            <argument type="service" id="csmt.responder" />
         </service>
+
+        <service id="csmt.snapshot_filesystem" class="Creode\Csmt\Command\Snapshot\Filesystem\SnapshotCommand">
+            <argument type="service" id="csmt.config" />
+            <argument type="service" id="csmt.storage_awss3" />
+            <argument type="service" id="csmt.responder" />
+        </service>
+
+
+
+        <!-- Entities -->
+
+        <service id="csmt.config"
+            class="Creode\Csmt\Config\Config">
+            <argument type="service" id="symfony.console_output" />
+        </service>
+
+        <service id="csmt.responder"
+            class="Creode\Csmt\Response\Responder">
+            <argument type="service" id="csmt.response_json" />
+        </service>
+
+
+
+        <!-- Response Types -->
+
+        <service id="csmt.response_json"
+            class="Creode\Csmt\Response\Formatter\Json">
+        </service>
+
+
+
+        <!-- Storage Types -->
+
+        <service id="csmt.storage_awss3"
+            class="Creode\Csmt\Storage\Remote\AwsS3">
+        </service>
+
 
 
         <!-- Raw symfony components -->

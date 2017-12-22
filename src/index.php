@@ -16,9 +16,19 @@ $container = new ContainerBuilder();
 $loader = new XmlFileLoader($container, new FileLocator(__DIR__));
 $loader->load('services.xml');
 
-// Create application so we can register additional commands in plugins
-$application = $container->get('symfony.application');
+try {
+    // Create application so we can register additional commands in plugins
+    $application = $container->get('symfony.application');
 
-// run the app
-$output = $container->get('symfony.console_output');
-$application->run(null, $output);
+    // run the app
+    $output = $container->get('symfony.console_output');
+    $application->run(null, $output);
+} catch (\Exception $e) {
+    $err = [
+        'error' => true,
+        'message' => $e->getMessage()
+    ];
+
+    // TODO: Convert this from hard coded json
+    echo json_encode($err) . PHP_EOL;
+}
