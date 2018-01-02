@@ -21,7 +21,15 @@
             </call>
 
             <call method="add">
+                <argument type="service" id="csmt.snapshot_database_info" />
+            </call>
+
+            <call method="add">
                 <argument type="service" id="csmt.snapshot_filesystem" />
+            </call>
+
+            <call method="add">
+                <argument type="service" id="csmt.snapshot_filesystem_info" />
             </call>
         </service>
 
@@ -39,7 +47,19 @@
             <argument type="service" id="csmt.responder" />
         </service>
 
+        <service id="csmt.snapshot_database_info" class="Creode\Csmt\Command\Snapshot\Database\SnapshotDetailsCommand">
+            <argument type="service" id="csmt.config" />
+            <argument type="service" id="csmt.storage_awss3" />
+            <argument type="service" id="csmt.responder" />
+        </service>
+
         <service id="csmt.snapshot_filesystem" class="Creode\Csmt\Command\Snapshot\Filesystem\SnapshotCommand">
+            <argument type="service" id="csmt.config" />
+            <argument type="service" id="csmt.storage_awss3" />
+            <argument type="service" id="csmt.responder" />
+        </service>
+
+        <service id="csmt.snapshot_filesystem_info" class="Creode\Csmt\Command\Snapshot\Filesystem\SnapshotDetailsCommand">
             <argument type="service" id="csmt.config" />
             <argument type="service" id="csmt.storage_awss3" />
             <argument type="service" id="csmt.responder" />

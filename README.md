@@ -1,6 +1,6 @@
-# Creode Server Management Tool
+# Creode Server Monitoring Tool
 
-A tool that sits within your existing site, allows backups (databases, directories) to be created, zipped and pushed to AWS S3.
+A tool that sits within your existing site, allows backups (databases, directories) to be created, zipped and pushed to external storage (e.g. AWS S3)
 
 Actions are triggered by a remote management system, allowing a single dashboard to monitor and trigger backups for a suite of websites.
 

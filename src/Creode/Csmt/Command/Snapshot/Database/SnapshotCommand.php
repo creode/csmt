@@ -3,8 +3,6 @@
 namespace Creode\Csmt\Command\Snapshot\Database;
 
 use Creode\Csmt\Command\Snapshot\Snapshot;
-use Symfony\Component\Console\Input\InputInterface;
-use Symfony\Component\Console\Output\OutputInterface;
 
 class SnapshotCommand extends Snapshot
 {
@@ -12,11 +10,6 @@ class SnapshotCommand extends Snapshot
     {
         $this->setName('snapshot:database');
         $this->setDescription('Takes a DB snapshot');
-    }
-
-    protected function execute(InputInterface $input, OutputInterface $output)
-    {   
-        $this->takeSnapshot();
     }
 
     public function takeSnapshot()
