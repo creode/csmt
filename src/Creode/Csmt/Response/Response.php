@@ -4,5 +4,5 @@ namespace Creode\Csmt\Response;
 
 interface Response
 {
-    public function send(array $responseData);
+    public function send(array $responseData, $httpResponseCode);
 }

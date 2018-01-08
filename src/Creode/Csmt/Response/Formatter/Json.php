@@ -6,8 +6,12 @@ use Creode\Csmt\Response\Response;
 
 class Json implements Response
 {
-    public function send(array $responseData)
+    public function send(array $responseData, $responseCode)
     {
-        echo json_encode($responseData) . PHP_EOL;
+        header('Content-type:application/json;charset=utf-8');
+
+        http_response_code($responseCode);
+
+        echo json_encode($responseData);
     }
 }

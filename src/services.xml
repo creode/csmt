@@ -17,6 +17,10 @@
             </call>
 
             <call method="add">
+                <argument type="service" id="csmt.handshake_command" />
+            </call>
+
+            <call method="add">
                 <argument type="service" id="csmt.snapshot_database" />
             </call>
 
@@ -39,6 +43,10 @@
 
         <service id="csmt.self_update_command"
             class="Creode\Csmt\Command\Csmt\UpdateCommand">
+        </service>
+
+        <service id="csmt.handshake_command" class="Creode\Csmt\Command\Csmt\HandshakeCommand">
+            <argument type="service" id="csmt.responder" />
         </service>
 
         <service id="csmt.snapshot_database" class="Creode\Csmt\Command\Snapshot\Database\SnapshotCommand">

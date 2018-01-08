@@ -11,8 +11,8 @@ class Responder
         $this->_response = $response;
     }
 
-    public function send(array $responseData)
+    public function send(array $responseData, $responseCode = 200)
     {
-        $this->_response->send($responseData);
+        $this->_response->send($responseData, $responseCode);
     }
 }

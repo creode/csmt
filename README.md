@@ -74,4 +74,20 @@ And the following .htaccess to prevent web access to your config file
 </files>
 ```
 
-Make sure you also add your directory to your `robots.txt` file (in the root of your site) so that it doesn't get crawled.
+
+## Password Protection
+Unless you're running this on an internal network you'll probably want to secure it.
+The simplest way to protect the tool is with basic auth. To do this, add the following to your .htaccess file
+
+```
+AuthType Basic
+AuthName "Password Protected Area"
+AuthUserFile /somewhere/outside/web/root/.htpasswd
+Require valid-user
+```
+and create an .htpasswd file in that location.
+You can generate your .htpasswd using a tool like http://www.htaccesstools.com/htpasswd-generator/
+
+
+## Search Engines
+Make sure you add your directory to your `robots.txt` file (in the root of your site) so that it doesn't get crawled.
