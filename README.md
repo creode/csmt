@@ -65,27 +65,24 @@ filesystem:
     region: eu-west-2
 ```
 
-And the following .htaccess to prevent web access to your config file
 
-```
-<files csmt.yml>
- order allow,deny
- deny from all
-</files>
-```
+## Securing the tool
+The simplest way to secure the tool and config is to perform a handshake from your dashboard. This will automatically setup the htpasswd and htaccess files you need.
 
-
-## Password Protection
-Unless you're running this on an internal network you'll probably want to secure it.
-The simplest way to protect the tool is with basic auth. To do this, add the following to your .htaccess file
+If you prefer to set this up yourself then add the following .htaccess to prevent web access to your config file
 
 ```
 AuthType Basic
 AuthName "Password Protected Area"
 AuthUserFile /somewhere/outside/web/root/.htpasswd
 Require valid-user
+
+<files csmt.yml>
+ order allow,deny
+ deny from all
+</files>
 ```
-and create an .htpasswd file in that location.
+
 You can generate your .htpasswd using a tool like http://www.htaccesstools.com/htpasswd-generator/
 
 
