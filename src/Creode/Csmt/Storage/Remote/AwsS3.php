@@ -6,8 +6,7 @@ use Creode\Csmt\Storage\Storage;
 
 class AwsS3 implements Storage
 {
-
-    public function transfer($source, $dest, array $storageDetails)
+    public function push($source, $dest, array $storageDetails)
     {
         if (!isset($storageDetails['s3'])) {
             throw new \Exception('S3 Credentials are missing from config file');
@@ -26,6 +25,30 @@ class AwsS3 implements Storage
             'Bucket'     => $storageDetails['s3']['bucket'],
             'Key'        => $dest,
             'SourceFile' => $source,
+        ]);
+    }
+
+    public function pull($source, $dest, array $storageDetails)
+    {
+        if (!isset($storageDetails['s3'])) {
+            throw new \Exception('S3 Credentials are missing from config file');
+        }
+
+        mkdir(dirname($dest), 0755, true);
+
+        $client = new \Aws\S3\S3Client([
+            'region'  => $storageDetails['s3']['region'],
+            'version' => 'latest',
+            'credentials' => [
+                'key'    => $storageDetails['s3']['access'],
+                'secret' => $storageDetails['s3']['secret'],
+            ],
+        ]);
+
+        $result = $client->getObject([
+            'Bucket'     => $storageDetails['s3']['bucket'],
+            'Key'        => $source,
+            'SaveAs'     => $dest,
         ]);
     }
 

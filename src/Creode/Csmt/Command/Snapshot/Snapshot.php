@@ -9,11 +9,6 @@ use Symfony\Component\Console\Output\OutputInterface;
 abstract class Snapshot extends BaseCommand
 {
     /**
-     * @var \Creode\Csmt\Config\Config $config
-     */
-    protected $_config;
-
-    /**
      * Constructor
      * @param \Creode\Csmt\Config\Config $config 
      */
@@ -25,16 +20,6 @@ abstract class Snapshot extends BaseCommand
         $this->_config = $config;
         $this->_storage = $storage;
 
-        parent::__construct($responder);
+        parent::__construct($config, $responder);
     }
-
-    protected function execute(InputInterface $input, OutputInterface $output)
-    {   
-        $this->takeSnapshot();
-    }
-
-    /**
-     * Takes a snapshot
-     */
-    abstract public function takeSnapshot();
 }

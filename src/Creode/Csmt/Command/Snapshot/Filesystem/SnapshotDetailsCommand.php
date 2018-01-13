@@ -17,14 +17,10 @@ class SnapshotDetailsCommand extends SnapshotDetails
         $filesystem = $this->_config->get('filesystem');
 
         if (count($filesystem)) {
-            foreach($filesystem as $label => $details) {
-                $info = $this->_storage->info($details['destination'], $details['storage']);
-
-                $file = new \Creode\Csmt\System\File($info['Key']);
-                $file->date($info['LastModified'])
-                    ->size($info['Size']);
-
-                $this->addFileToResponse($file);
+            if ($this->isLiveEnvironment()) {
+                array_walk($filesystem, array($this, 'getLiveSnapshotInfo'));
+            } else {
+                array_walk($filesystem, array($this, 'getTestSnapshotInfo'));
             }
         }
 

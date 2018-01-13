@@ -29,6 +29,14 @@
             </call>
 
             <call method="add">
+                <argument type="service" id="csmt.snapshot_database_restore" />
+            </call>
+
+            <call method="add">
+                <argument type="service" id="csmt.snapshot_database_pull" />
+            </call>
+
+            <call method="add">
                 <argument type="service" id="csmt.snapshot_filesystem" />
             </call>
 
@@ -46,6 +54,7 @@
         </service>
 
         <service id="csmt.handshake_command" class="Creode\Csmt\Command\Csmt\HandshakeCommand">
+            <argument type="service" id="csmt.config" />
             <argument type="service" id="csmt.responder" />
         </service>
 
@@ -56,6 +65,18 @@
         </service>
 
         <service id="csmt.snapshot_database_info" class="Creode\Csmt\Command\Snapshot\Database\SnapshotDetailsCommand">
+            <argument type="service" id="csmt.config" />
+            <argument type="service" id="csmt.storage_awss3" />
+            <argument type="service" id="csmt.responder" />
+        </service>
+
+        <service id="csmt.snapshot_database_restore" class="Creode\Csmt\Command\Snapshot\Database\SnapshotRestoreCommand">
+            <argument type="service" id="csmt.config" />
+            <argument type="service" id="csmt.storage_awss3" />
+            <argument type="service" id="csmt.responder" />
+        </service>
+
+        <service id="csmt.snapshot_database_pull" class="Creode\Csmt\Command\Snapshot\Database\SnapshotPullCommand">
             <argument type="service" id="csmt.config" />
             <argument type="service" id="csmt.storage_awss3" />
             <argument type="service" id="csmt.responder" />

@@ -2,9 +2,9 @@
 
 namespace Creode\Csmt\Command\Snapshot\Database;
 
-use Creode\Csmt\Command\Snapshot\Snapshot;
+use Creode\Csmt\Command\Snapshot\SnapshotTaker;
 
-class SnapshotCommand extends Snapshot
+class SnapshotCommand extends SnapshotTaker
 {
     protected function configure()
     {
@@ -16,13 +16,17 @@ class SnapshotCommand extends Snapshot
     {
         $databases = $this->_config->get('databases');
 
+        if (!$this->systemCommandExists('mysqldump')) {
+            $this->sendErrorResponse('mysqldump - command not found');
+        }
+
         if (count($databases)) {
             foreach($databases as $filename => $databaseDetails) {
                 // TODO: This shouldn't always be mysql
-                $outfile = sys_get_temp_dir() . DIRECTORY_SEPARATOR . $databaseDetails['filename'];
+                $outfile = $this->getLocalStorageDir() . $databaseDetails['filename'];
                 exec('mysqldump -h ' . $databaseDetails['host'] . ' -u ' . $databaseDetails['user'] . ' -p"' . $databaseDetails['pass'] . '" ' . $databaseDetails['name'] . ' > ' . $outfile);
 
-                $this->_storage->transfer($outfile, $databaseDetails['destination'], $databaseDetails['storage']);
+                $this->_storage->push($outfile, $databaseDetails['destination'], $databaseDetails['storage']);
             }
         }
 

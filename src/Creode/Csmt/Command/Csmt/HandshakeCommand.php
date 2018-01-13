@@ -41,7 +41,7 @@ class HandshakeCommand extends BaseCommand
         // Password to be encrypted for a .htpasswd file
         $password = bin2hex(random_bytes(50));
 
-        $this->encryptedPassword = crypt($password, base64_encode($password));
+        $this->encryptedPassword = password_hash($password, PASSWORD_BCRYPT);
         $this->password = $password;
         $this->username = base64_encode(uniqid());
     }

@@ -17,14 +17,10 @@ class SnapshotDetailsCommand extends SnapshotDetails
         $databases = $this->_config->get('databases');
 
         if (count($databases)) {
-            foreach($databases as $filename => $databaseDetails) {
-                $info = $this->_storage->info($databaseDetails['destination'], $databaseDetails['storage']);
-
-                $file = new \Creode\Csmt\System\File($info['Key']);
-                $file->date($info['LastModified'])
-                    ->size($info['Size']);
-
-                $this->addFileToResponse($file);
+            if ($this->isLiveEnvironment()) {
+                array_walk($databases, array($this, 'getLiveSnapshotInfo'));
+            } else {
+                array_walk($databases, array($this, 'getTestSnapshotInfo'));
             }
         }
 

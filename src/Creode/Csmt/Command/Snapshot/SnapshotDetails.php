@@ -2,37 +2,16 @@
 
 namespace Creode\Csmt\Command\Snapshot;
 
-use Creode\Csmt\Command\BaseCommand;
 use Creode\Csmt\System\File;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
-abstract class SnapshotDetails extends BaseCommand
+abstract class SnapshotDetails extends Snapshot
 {
-    /**
-     * @var \Creode\Csmt\Config\Config $config
-     */
-    protected $_config;
-
     /**
      * @var array
      */
     private $_files = [];
-
-    /**
-     * Constructor
-     * @param \Creode\Csmt\Config\Config $config 
-     */
-    public final function __construct(
-        \Creode\Csmt\Config\Config $config,
-        \Creode\Csmt\Storage\Storage $storage,
-        \Creode\Csmt\Response\Responder $responder
-    ) {
-        $this->_config = $config;
-        $this->_storage = $storage;
-
-        parent::__construct($responder);
-    }
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {   
@@ -55,6 +34,62 @@ abstract class SnapshotDetails extends BaseCommand
     protected function snapshotInfoSuccess() 
     {
         $this->sendSuccessResponse(['files' => $this->_files]);
+    }
+
+    /**
+     * Adds snapshot details from live server storage
+     * @param array $details 
+     * @param string $name 
+     * @return void
+     */
+    protected function getLiveSnapshotInfo(array $details, $name)
+    {
+        $info = $this->_storage->info($details['destination'], $details['storage']);
+
+        $file = new \Creode\Csmt\System\File($info['Key']);
+
+        $dateTime = \DateTime::createFromFormat ( \DateTime::ISO8601 , $info['LastModified'] );
+
+        $file->date($dateTime)
+            ->size($info['Size']);
+
+        $this->addFileToResponse($file);
+    }
+
+    /**
+     * Adds snapshot details from live server storage
+     * @param array $details 
+     * @param string $name 
+     * @return void
+     */
+    protected function getTestSnapshotInfo(array $details, $name)
+    {
+        $path = $this->getLocalStorageDir() . $details['filename'];
+
+        $file = new \Creode\Csmt\System\File($path);
+
+        if (file_exists($path)) {
+            $date = date(\DateTime::ISO8601, filemtime($path));
+            $dateTime = \DateTime::createFromFormat ( \DateTime::ISO8601 , $date );
+            // $dateTime = new \DateTime($date);
+            // $date->format(DATE_ISO8601);
+            // $date->setTimestamp(filemtime($path));
+
+            $file->date($dateTime)
+                ->size(filesize($path));           
+        } else {
+            $file->size(-1);
+        }
+
+        $this->addFileToResponse($file);
+
+        // $info = $this->_storage->info($details['destination'], $details['storage']);
+
+        // $file = new \Creode\Csmt\System\File($info['Key']);
+        // $file->date($info['LastModified'])
+        //     ->size($info['Size']);
+
+        // $this->addFileToResponse($file);
     }
 
     /**

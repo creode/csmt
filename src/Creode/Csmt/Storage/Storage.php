@@ -4,7 +4,9 @@ namespace Creode\Csmt\Storage;
 
 interface Storage
 {
-    public function transfer($source, $dest, array $storageDetails);
+    public function push($source, $dest, array $storageDetails);
+
+    public function pull($source, $dest, array $storageDetails);
 
     public function info($source, array $storageDetails);
 }
