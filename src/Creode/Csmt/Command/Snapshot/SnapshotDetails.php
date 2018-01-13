@@ -71,9 +71,6 @@ abstract class SnapshotDetails extends Snapshot
         if (file_exists($path)) {
             $date = date(\DateTime::ISO8601, filemtime($path));
             $dateTime = \DateTime::createFromFormat ( \DateTime::ISO8601 , $date );
-            // $dateTime = new \DateTime($date);
-            // $date->format(DATE_ISO8601);
-            // $date->setTimestamp(filemtime($path));
 
             $file->date($dateTime)
                 ->size(filesize($path));           
@@ -82,14 +79,6 @@ abstract class SnapshotDetails extends Snapshot
         }
 
         $this->addFileToResponse($file);
-
-        // $info = $this->_storage->info($details['destination'], $details['storage']);
-
-        // $file = new \Creode\Csmt\System\File($info['Key']);
-        // $file->date($info['LastModified'])
-        //     ->size($info['Size']);
-
-        // $this->addFileToResponse($file);
     }
 
     /**

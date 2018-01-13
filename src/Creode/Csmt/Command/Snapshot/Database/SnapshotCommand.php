@@ -20,6 +20,8 @@ class SnapshotCommand extends SnapshotTaker
             $this->sendErrorResponse('mysqldump - command not found');
         }
 
+        mkdir($this->getLocalStorageDir(), 0755, true);
+
         if (count($databases)) {
             foreach($databases as $filename => $databaseDetails) {
                 // TODO: This shouldn't always be mysql

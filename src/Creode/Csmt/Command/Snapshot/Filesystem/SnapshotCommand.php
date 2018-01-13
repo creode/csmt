@@ -20,6 +20,8 @@ class SnapshotCommand extends SnapshotTaker
             $this->sendErrorResponse('zip - command not found');
         }
 
+        mkdir($this->getLocalStorageDir(), 0755, true);
+
         if (count($filesystem)) {
             foreach($filesystem as $label => $details) {
                 // TODO: This shouldn't always be zip

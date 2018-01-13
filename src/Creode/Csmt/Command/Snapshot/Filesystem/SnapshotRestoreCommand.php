@@ -1,6 +1,6 @@
 <?php
 
-namespace Creode\Csmt\Command\Snapshot\Database;
+namespace Creode\Csmt\Command\Snapshot\Filesystem;
 
 use Creode\Csmt\Command\Snapshot\SnapshotRestore;
 
