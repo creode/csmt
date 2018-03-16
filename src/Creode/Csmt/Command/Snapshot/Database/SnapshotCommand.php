@@ -20,18 +20,28 @@ class SnapshotCommand extends SnapshotTaker
             $this->sendErrorResponse('mysqldump - command not found');
         }
 
-        mkdir($this->getLocalStorageDir(), 0755, true);
-
-        if (count($databases)) {
-            foreach($databases as $filename => $databaseDetails) {
-                // TODO: This shouldn't always be mysql
-                $outfile = $this->getLocalStorageDir() . $databaseDetails['filename'];
-                exec('mysqldump -h ' . $databaseDetails['host'] . ' -u ' . $databaseDetails['user'] . ' -p"' . $databaseDetails['pass'] . '" ' . $databaseDetails['name'] . ' > ' . $outfile);
-
-                $this->_storage->push($outfile, $databaseDetails['destination'], $databaseDetails['storage']);
-            }
+        if (!file_exists($this->getLocalStorageDir())) {
+            mkdir($this->getLocalStorageDir(), 0755, true);
         }
 
-        $this->sendSuccessResponse('Took DB snapshot and stored safely');
+        try {
+            if (count($databases)) {
+                foreach($databases as $filename => $databaseDetails) {
+                    // TODO: This shouldn't always be mysql
+                    $outfile = $this->getLocalStorageDir() . $databaseDetails['filename'];
+                    exec('mysqldump -h ' . $databaseDetails['host'] . ' -u ' . $databaseDetails['user'] . " -p'" . $databaseDetails['pass'] . "' " . $databaseDetails['name'] . ' > ' . $outfile);
+
+                    if (filesize($outfile) == 0) {
+                        throw new \Exception('Dump file size is zero');
+                    }
+
+                    $this->_storage->push($outfile, $databaseDetails['destination'], $databaseDetails['storage']);
+                }
+            }
+
+            $this->sendSuccessResponse('Took DB snapshot and stored safely');
+        } catch (\Exception $e) {
+            $this->sendErrorResponse('Error taking DB dump - ' . $e->getMessage());
+        }
     }
 }
