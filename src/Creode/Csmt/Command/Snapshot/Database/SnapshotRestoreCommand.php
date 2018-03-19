@@ -32,7 +32,7 @@ class SnapshotRestoreCommand extends SnapshotRestore
             foreach($databases as $filename => $databaseDetails) {
                 // TODO: This shouldn't always be mysql
                 $infile = $dir . $databaseDetails['filename'];
-                exec('mysql -h ' . $databaseDetails['host'] . ' -u ' . $databaseDetails['user'] . ' -p"' . $databaseDetails['pass'] . '" ' . $databaseDetails['name'] . ' < ' . $infile);
+                exec('mysql -h ' . $databaseDetails['host'] . ' -u ' . $databaseDetails['user'] . " -p'" . $databaseDetails['pass'] . "' " . $databaseDetails['name'] . ' < ' . $infile);
             }
         } catch (\Exception $e) {
             $this->sendErrorResponse('There was a problem restoring the ' . $filename . ' database');
