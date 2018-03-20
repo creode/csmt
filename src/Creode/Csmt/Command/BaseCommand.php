@@ -57,6 +57,19 @@ class BaseCommand extends Command
     }
 
     /**
+     * Sends an info response
+     * @param mixed $responseData 
+     */
+    public function sendInfoResponse($responseData, $responseCode = 200)
+    {
+        $response = is_array($responseData) ? $responseData : ['message' => $responseData];
+
+        $response['info'] = true;
+
+        $this->sendResponse($response, $responseCode);
+    }
+
+    /**
      * Sends a response
      * @param array $response
      * @return type

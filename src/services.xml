@@ -57,8 +57,9 @@
 
         <!-- Command classes -->
 
-        <service id="csmt.self_update_command"
-            class="Creode\Csmt\Command\Csmt\UpdateCommand">
+        <service id="csmt.self_update_command" class="Creode\Csmt\Command\Csmt\UpdateCommand">
+            <argument type="service" id="csmt.config" />
+            <argument type="service" id="csmt.responder" />
         </service>
 
         <service id="csmt.handshake_command" class="Creode\Csmt\Command\Csmt\HandshakeCommand">

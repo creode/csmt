@@ -11,6 +11,7 @@
 
 namespace Creode\Csmt\Command\Csmt;
 
+use Creode\Csmt\Command\BaseCommand;
 use Humbug\Exception\FilesystemException;
 use Humbug\Console\Application;
 use Symfony\Component\Console\Command\Command;
@@ -22,7 +23,7 @@ use Humbug\SelfUpdate\VersionParser;
 use Humbug\SelfUpdate\Strategy\ShaStrategy;
 use Humbug\SelfUpdate\Strategy\GithubStrategy;
 
-class UpdateCommand extends Command
+class UpdateCommand extends BaseCommand
 {
     const VERSION_URL = 'https://creode.github.io/csmt/downloads/csmt.version';
 
@@ -50,62 +51,66 @@ class UpdateCommand extends Command
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $this->output = $output;
-        $this->version = $this->getApplication()->getVersion();
-        $parser = new VersionParser;
+        try {
+            $this->output = $output;
+            $this->version = $this->getApplication()->getVersion();
+            $parser = new VersionParser;
 
-        /**
-         * Check for ancilliary options
-         */
-        if ($input->getOption('rollback')) {
-            $this->rollback();
-            return;
-        }
+            /**
+             * Check for ancilliary options
+             */
+            if ($input->getOption('rollback')) {
+                $this->rollback();
+                return;
+            }
 
-        if ($input->getOption('check')) {
-            $this->printAvailableUpdates();
-            return;
-        }
+            if ($input->getOption('check')) {
+                $this->printAvailableUpdates();
+                return;
+            }
 
-        /**
-         * Update to any specified stability option
-         */
-        if ($input->getOption('dev')) {
+            /**
+             * Update to any specified stability option
+             */
+            if ($input->getOption('dev')) {
+                $this->updateToDevelopmentBuild();
+                return;
+            }
+            
+            if ($input->getOption('pre')) {
+                $this->updateToPreReleaseBuild();
+                return;
+            }
+
+            if ($input->getOption('stable')) {
+                $this->updateToStableBuild();
+                return;
+            }
+
+            if ($input->getOption('non-dev')) {
+                $this->updateToMostRecentNonDevRemote();
+                return;
+            }
+
+            /**
+             * If current build is stable, only update to more recent stable
+             * versions if available. User may specify otherwise using options.
+             */
+            // if ($parser->isStable($this->version)) {
+            //     $this->updateToStableBuild();
+            //     return;
+            // }
+
+            /**
+             * By default, update to most recent remote version regardless
+             * of stability.
+             */
+            // $this->updateToMostRecentNonDevRemote();
+            // or not .. just update to dev version
             $this->updateToDevelopmentBuild();
-            return;
+        } catch (\Exception $e) {
+            $this->sendErrorResponse('Error: ' . $e->getMessage());
         }
-        
-        if ($input->getOption('pre')) {
-            $this->updateToPreReleaseBuild();
-            return;
-        }
-
-        if ($input->getOption('stable')) {
-            $this->updateToStableBuild();
-            return;
-        }
-
-        if ($input->getOption('non-dev')) {
-            $this->updateToMostRecentNonDevRemote();
-            return;
-        }
-
-        /**
-         * If current build is stable, only update to more recent stable
-         * versions if available. User may specify otherwise using options.
-         */
-        // if ($parser->isStable($this->version)) {
-        //     $this->updateToStableBuild();
-        //     return;
-        // }
-
-        /**
-         * By default, update to most recent remote version regardless
-         * of stability.
-         */
-        // $this->updateToMostRecentNonDevRemote();
-        // or not .. just update to dev version
-        $this->updateToDevelopmentBuild();
     }
 
     protected function getStableUpdater()
@@ -169,7 +174,6 @@ class UpdateCommand extends Command
 
     protected function update(Updater $updater)
     {
-        $this->output->writeln('Updating...'.PHP_EOL);
         try {
             $result = $updater->update();
 
@@ -183,27 +187,13 @@ class UpdateCommand extends Command
             }
         
             if ($result) {
-                $this->output->writeln('<fg=green>' . self::FILE_NAME . ' has been updated.</fg=green>');
-                $this->output->writeln(sprintf(
-                    '<fg=green>Current version is:</fg=green> <options=bold>%s</options=bold>.',
-                    $newVersion
-                ));
-                $this->output->writeln(sprintf(
-                    '<fg=green>Previous version was:</fg=green> <options=bold>%s</options=bold>.',
-                    $oldVersion
-                ));
+                $this->sendSuccessResponse(self::FILE_NAME . ' has been updated to version ' . $newVersion);
             } else {
-                $this->output->writeln('<fg=green>' . self::FILE_NAME . ' is currently up to date.</fg=green>');
-                $this->output->writeln(sprintf(
-                    '<fg=green>Current version is:</fg=green> <options=bold>%s</options=bold>.',
-                    $oldVersion
-                ));
+                $this->sendInfoResponse(self::FILE_NAME . ' is currently up to date.');
             }
         } catch (\Exception $e) {
-            $this->output->writeln(sprintf('Error: <fg=yellow>%s</fg=yellow>', $e->getMessage()));
+            $this->sendErrorResponse('Error: ' . $e->getMessage());
         }
-        $this->output->write(PHP_EOL);
-        $this->output->writeln('You can also select update stability using --dev, --pre (alpha/beta/rc) or --stable.');
     }
 
     protected function rollback()
@@ -212,12 +202,12 @@ class UpdateCommand extends Command
         try {
             $result = $updater->rollback();
             if ($result) {
-                $this->output->writeln('<fg=green>' . self::FILE_NAME . ' has been rolled back to prior version.</fg=green>');
+                $this->sendSuccessResponse(self::FILE_NAME . ' has been rolled back to prior version.');
             } else {
-                $this->output->writeln('<fg=red>Rollback failed for reasons unknown.</fg=red>');
+                $this->sendErrorResponse('Rollback failed for reasons unknown.');
             }
         } catch (\Exception $e) {
-            $this->output->writeln(sprintf('Error: <fg=yellow>%s</fg=yellow>', $e->getMessage()));
+            $this->sendErrorResponse('Error: ' . $e->getMessage());
         }
     }
 
