@@ -16,7 +16,7 @@ class SnapshotPullCommand extends SnapshotPull
     {
         $databases = $this->_config->get('databases');
 
-        if (count($databases)) {
+        if (is_array($databases) && count($databases)) {
             foreach($databases as $filename => $databaseDetails) {
                 $outfile = $this->getLocalStorageDir() . $databaseDetails['filename'];
 

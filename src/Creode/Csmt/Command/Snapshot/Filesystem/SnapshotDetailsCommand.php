@@ -16,7 +16,7 @@ class SnapshotDetailsCommand extends SnapshotDetails
     {
         $filesystem = $this->_config->get('filesystem');
 
-        if (count($filesystem)) {
+        if (is_array($filesystem) && count($filesystem)) {
             if ($this->isLiveEnvironment()) {
                 array_walk($filesystem, array($this, 'getLiveSnapshotInfo'));
             } else {

@@ -16,7 +16,7 @@ class SnapshotDetailsCommand extends SnapshotDetails
     {
         $databases = $this->_config->get('databases');
 
-        if (count($databases)) {
+        if (is_array($databases) && count($databases)) {
             if ($this->isLiveEnvironment()) {
                 array_walk($databases, array($this, 'getLiveSnapshotInfo'));
             } else {

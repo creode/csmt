@@ -16,7 +16,7 @@ class SnapshotPullCommand extends SnapshotPull
     {
         $filesystem = $this->_config->get('filesystem');
 
-        if (count($filesystem)) {
+        if (is_array($filesystem) && count($filesystem)) {
             foreach($filesystem as $label => $details) {
                 $outfile = $this->getLocalStorageDir() . $details['filename'];
 
