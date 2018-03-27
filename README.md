@@ -4,6 +4,12 @@ A tool that sits within your existing site, allows backups (databases, directori
 
 Actions are triggered by a remote management system, allowing a single dashboard to monitor and trigger backups for a suite of websites.
 
+### Installation on mac/linux
+This will install the phar to the current directory
+```
+curl -s https://github.com/creode/csmt/install | bash -s
+```
+
 ## Example Usage
 Drop the csmt.phar file into a web-accessible directory of your choice
 In the same directory, create an `index.php` file with the following contents:
