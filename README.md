@@ -20,7 +20,7 @@ The install will download a `csmt.yml.example` file containing an example config
 ```
 environment: test
 project:
- name: Basis_EN
+ name: My_Project_Name
 databases:
  website:
   host: mysql
