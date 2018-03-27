@@ -15,3 +15,15 @@ databases:
     secret: SECRET+KEY
     bucket: backups.creode.bucketname
     region: eu-west-2
+filesystem:
+ en_files:
+  parentdir: /var/www/html
+  dir: files
+  filename: example_files.zip
+  destination: media/example_files.zip
+  storage: 
+   s3:
+    access: ACCESS+KEY
+    secret: SECRET+KEY
+    bucket: backups.creode.bucketname
+    region: eu-west-2

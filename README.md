@@ -11,25 +11,16 @@ curl -s https://raw.githubusercontent.com/creode/csmt/master/install.sh | bash -
 ```
 
 ## Example Usage
-Drop the csmt.phar file into a web-accessible directory of your choice
-In the same directory, create an `index.php` file with the following contents:
+Run the installation command in a web-accessible directory of your choice. Initially the install will be open to the world, but performing a handshake (via the dashboard) will setup the Basic Auth security.
+
+The install will download a `csmt.yml.example` file containing an example configuration for this site. You should copy this to `csmt.yml` and configure for this particular site.
+
+### Example configuration file
 
 ```
-<?php
-
-$command = isset($_GET['command']) ? $_GET['command'] : '--version';
-
-
-exec('php csmt.phar ' . escapeshellarg($command), $output, $return_var);
-
-foreach($output as $out) {
-    echo $out . PHP_EOL;
-}
-```
-
-Also in the same directory create a `csmt.yml` file containing the configuration for this site, example structure:
-
-```
+environment: test
+project:
+ name: Basis_EN
 databases:
  website:
   host: mysql
@@ -62,7 +53,7 @@ filesystem:
   parentdir: /var/www/html
   dir: files
   filename: en_files.zip
-  destination: databases/wordpress.sql
+  destination: media/en_files.zip
   storage: 
    s3:
     access: PASTEACCESSKEYHERE
@@ -71,6 +62,40 @@ filesystem:
     region: eu-west-2
 ```
 
+
+### What are the config settings?
+#### environment
+This is 'live' or 'test' - the tool will restrict the commands that can be run per environment in order to prevent you overriding a live DB with a test one (for example)
+
+#### project.name
+This will be used for directory naming when creating temporary files - ensure it is directory friendly and does not include any spaces
+
+#### databases.xxxx
+Each node under 'databases' refers to its own database. You can configure multiple databases on multiple hosts to be a part of the same backup process.
+##### databases.xxxx.filename
+This is the name of the file that will be created on the server as part of the dump
+##### databases.xxxx.destination
+This is the path that the file will be placed in the off-server storage
+##### databases.xxxx.storage
+These are the credentials for the off-server storage, currently only AWS is supported. All config options are shown in the example above.
+
+#### filesystem.xxxx
+As with databases, each node under 'filesystem' refers to its own directory.
+##### filesystem.xxxx.parentdir
+In order to avoid zipping up a sub-sub-sub directory you need to specify the parent dir. The app will effectively `cd $parentdir` before creating a zip.
+##### filesystem.xxxx.dir
+The directory to be zipped, no slashes
+##### filesystem.xxxx.filename
+This is the name of the file that will be created on the server as part of the dump
+##### filesystem.xxxx.destination
+This is the path that the file will be placed in the off-server storage
+##### filesystem.xxxx.storage
+These are the credentials for the off-server storage, currently only AWS is supported. All config options are shown in the example above.
+
+
+ 
+## AWS IAM Access levels
+The user should have the ability to read and write to the bucket that you specify.
 
 ## Securing the tool
 The simplest way to secure the tool and config is to perform a handshake from your dashboard. This will automatically setup the htpasswd and htaccess files you need.
