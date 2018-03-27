@@ -64,34 +64,41 @@ filesystem:
 
 
 ### What are the config settings?
-#### environment
-This is 'live' or 'test' - the tool will restrict the commands that can be run per environment in order to prevent you overriding a live DB with a test one (for example)
+<dl>
+  <dt>environment</dt>
+  <dd>This is 'live' or 'test' - the tool will restrict the commands that can be run per environment in order to prevent you overriding a live DB with a test one (for example)</dd>
 
-#### project.name
-This will be used for directory naming when creating temporary files - ensure it is directory friendly and does not include any spaces
+  <dt>project.name</dt>
+  <dd>This will be used for directory naming when creating temporary files - ensure it is directory friendly and does not include any spaces</dd>
 
-#### databases.xxxx
-Each node under 'databases' refers to its own database. You can configure multiple databases on multiple hosts to be a part of the same backup process.
-##### databases.xxxx.filename
-This is the name of the file that will be created on the server as part of the dump
-##### databases.xxxx.destination
-This is the path that the file will be placed in the off-server storage
-##### databases.xxxx.storage
-These are the credentials for the off-server storage, currently only AWS is supported. All config options are shown in the example above.
+  <dt>databases.xxxx</dt>
+  <dd>
+    Each node under 'databases' refers to its own database. You can configure multiple databases on multiple hosts to be a part of the same backup process.
+    <dl>
+      <dt>databases.xxxx.filename</dt>
+      <dd>This is the name of the file that will be created on the server as part of the dump</dd>
+      <dt>databases.xxxx.destination</dt>
+      <dd>This is the path that the file will be placed in the off-server storage</dd>
+      <dt>databases.xxxx.storage</dt>
+      <dd>These are the credentials for the off-server storage, currently only AWS is supported. All config options are shown in the example above.</dd>
+    </dl>
+  </dd>
 
-#### filesystem.xxxx
-As with databases, each node under 'filesystem' refers to its own directory.
-##### filesystem.xxxx.parentdir
-In order to avoid zipping up a sub-sub-sub directory you need to specify the parent dir. The app will effectively `cd $parentdir` before creating a zip.
-##### filesystem.xxxx.dir
-The directory to be zipped, no slashes
-##### filesystem.xxxx.filename
-This is the name of the file that will be created on the server as part of the dump
-##### filesystem.xxxx.destination
-This is the path that the file will be placed in the off-server storage
-##### filesystem.xxxx.storage
-These are the credentials for the off-server storage, currently only AWS is supported. All config options are shown in the example above.
-
+  <dt>filesystem.xxxx</dt>
+  <dd>
+    As with databases, each node under 'filesystem' refers to its own directory.
+    <dl>
+      <dt>filesystem.xxxx.parentdir</dt>
+      <dd>In order to avoid zipping up a sub-sub-sub directory you need to specify the parent dir. The app will effectively `cd $parentdir` before creating a zip.</dd>
+      <dt>filesystem.xxxx.dir</dt>
+      <dd>The directory to be zipped, no slashes</dd>
+      <dt>filesystem.xxxx.filename</dt>
+      <dd>This is the name of the file that will be created on the server as part of the dump</dd>
+      <dt>filesystem.xxxx.destination</dt>
+      <dd>This is the path that the file will be placed in the off-server storage</dd>
+      <dt>filesystem.xxxx.storage</dt>
+      <dd>These are the credentials for the off-server storage, currently only AWS is supported. All config options are shown in the example above.</dd>
+  </dd>
 
  
 ## AWS IAM Access levels
