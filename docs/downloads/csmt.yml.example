@@ -1,0 +1,17 @@
+environment: test
+project:
+ name: Example_Project
+databases:
+ website:
+  host: localhost
+  name: example_dbname
+  pass: supersecurepa$$word
+  user: example_dbuser
+  filename: example_db.sql
+  destination: databases/example_db.sql
+  storage: 
+   s3:
+    access: ACCESS+KEY
+    secret: SECRET+KEY
+    bucket: backups.creode.bucketname
+    region: eu-west-2

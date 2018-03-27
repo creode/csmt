@@ -18,16 +18,17 @@ ICON_ERROR="${ERROR_COLOUR}\xcf\xbf${NO_COLOUR}"
 RELEASE='https://github.com/creode/csmt/raw/master/docs/downloads/csmt.phar'
 RELEASE_KEY='https://raw.githubusercontent.com/creode/csmt/master/docs/downloads/csmt.phar.pubkey'
 RELEASE_INDEX='https://raw.githubusercontent.com/creode/csmt/master/docs/downloads/index.php'
+RELEASE_CONFIG='https://raw.githubusercontent.com/creode/csmt/master/docs/downloads/csmt.yml.example'
 
 TMP_RELEASE_FILE=$(mktemp)
 TMP_RELEASE_KEY_FILE=$(mktemp)
 TMP_RELEASE_INDEX_FILE=$(mktemp)
+TMP_RELEASE_CONFIG_FILE=$(mktemp)
 
 TARGET_RELEASE_PATH="${INSTALL_DIR}/csmt.phar"
 TARGET_RELEASE_KEY_PATH="${INSTALL_DIR}/csmt.phar.pubkey"
 TARGET_RELEASE_INDEX_PATH="${INSTALL_DIR}/index.php"
-
-
+TARGET_RELEASE_CONFIG_PATH="${INSTALL_DIR}/csmt.yml.example"
 
 
 
@@ -144,6 +145,25 @@ if curl -LsSo $TMP_RELEASE_INDEX_FILE $RELEASE_INDEX ; then
 
 else
   err "Error when downloading csmt index release from ${RELEASE_INDEX}"
+fi
+
+
+
+log "Downloading latest csmt example config to $TMP_RELEASE_CONFIG_FILE"
+
+if curl -LsSo $TMP_RELEASE_CONFIG_FILE $RELEASE_CONFIG ; then
+  progress 90
+
+  log "Copying to $TARGET_RELEASE_PATH"
+  if cp $TMP_RELEASE_CONFIG_FILE $TARGET_RELEASE_CONFIG_PATH ; then
+    progress 95
+    log "example config file successfully installed."
+  else
+    err "Error when copying csmt example config to ${TARGET_RELEASE_CONFIG_PATH}"
+  fi
+
+else
+  err "Error when downloading csmt example config from ${RELEASE_CONFIG}" 
 fi
 
 
