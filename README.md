@@ -7,7 +7,7 @@ Actions are triggered by a remote management system, allowing a single dashboard
 ### Installation on mac/linux
 This will install the phar to the current directory
 ```
-curl -s https://github.com/creode/csmt/install | bash -s
+curl -s https://raw.githubusercontent.com/creode/csmt/master/install.sh | bash -s
 ```
 
 ## Example Usage

@@ -137,21 +137,13 @@ if curl -LsSo $TMP_RELEASE_INDEX_FILE $RELEASE_INDEX ; then
   log "Copying to $TARGET_RELEASE_PATH"
   if cp $TMP_RELEASE_INDEX_FILE $TARGET_RELEASE_INDEX_PATH ; then
     progress 80
-
-    log "Making executable"
-    if chmod +x $TARGET_RELEASE_INDEX_PATH ; then
-      progress 90
-      log "csmt.phar successfully installed."
-    else
-      err "Error when granting execute permissions on ${TARGET_RELEASE_INDEX_PATH}"
-    fi
-
+    log "index.php successfully installed."
   else
-    err "Error when copying csmt release to ${TARGET_RELEASE_INDEX_PATH}"
+    err "Error when copying csmt index release to ${TARGET_RELEASE_INDEX_PATH}"
   fi
 
 else
-  err "Error when downloading csmt release from ${RELEASE_INDEX}"
+  err "Error when downloading csmt index release from ${RELEASE_INDEX}"
 fi
 
 
