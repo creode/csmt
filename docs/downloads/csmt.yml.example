@@ -1,29 +1,29 @@
 environment: test
 project:
- name: Example_Project
+ name: what
 databases:
  website:
   host: localhost
-  name: example_dbname
-  pass: supersecurepa$$word
-  user: example_dbuser
-  filename: example_db.sql
-  destination: databases/example_db.sql
+  name: what
+  pass: what
+  user: what
+  filename: what.sql
+  destination: databases/what.sql
   storage: 
    s3:
-    access: ACCESS+KEY
-    secret: SECRET+KEY
-    bucket: backups.creode.bucketname
+    access: what
+    secret: what
+    bucket: backups.creode.what
     region: eu-west-2
 filesystem:
- en_files:
+ files:
   parentdir: /var/www/html
   dir: files
-  filename: example_files.zip
-  destination: media/example_files.zip
+  filename: what.zip
+  destination: media/what.zip
   storage: 
    s3:
-    access: ACCESS+KEY
-    secret: SECRET+KEY
-    bucket: backups.creode.bucketname
+    access: what
+    secret: what
+    bucket: backups.creode.what
     region: eu-west-2
