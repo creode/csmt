@@ -79,8 +79,8 @@ function checkSystemRequirements {
 
   PHP_VERSION=`php --version | head -n 1 | cut -d " " -f 2 | cut -c 1,3`
 
-  if [ "$PHP_VERSION" -lt "54" ] ; then
-    err "PHP Version must be at least 5.4 to use this tool"
+  if [ "$PHP_VERSION" -lt "55" ] ; then
+    err "PHP Version must be at least 5.5 to use this tool"
   fi
 }
 
