@@ -74,12 +74,26 @@ function progress {
   echo -ne "- ${ICON_INCOMPLETE} ${BAR_COLOUR_COMPLETE}installing ${BAR_COLOUR_COMPLETE}${COMPLETE_CHARS:1}${BAR_COLOUR_REMAINING}${REMAINING_CHARS:1} ${TEXT_COLOUR}(${COMPLETE}%)${NO_COLOUR}\r"
 }
 
+function checkSystemRequirements {
+  echo -ne "${BAR_COLOUR_REMAINING}Checking system requirements${NO_COLOUR}\r"
+
+  PHP_VERSION=`php --version | head -n 1 | cut -d " " -f 2 | cut -c 1,3`
+
+  if [ "$PHP_VERSION" -lt "55" ] ; then
+    err "PHP Version must be at least 5.5 to use this tool"
+  fi
+}
+
 
 
 
 mkdir -p ${INSTALL_DIR}
 
 initLogEntry
+
+progress 5
+
+checkSystemRequirements
 
 progress 10
 
