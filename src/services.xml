@@ -37,6 +37,10 @@
             </call>
 
             <call method="add">
+                <argument type="service" id="csmt.snapshot_database_download" />
+            </call>
+
+            <call method="add">
                 <argument type="service" id="csmt.snapshot_filesystem" />
             </call>
 
@@ -50,6 +54,10 @@
 
             <call method="add">
                 <argument type="service" id="csmt.snapshot_filesystem_pull" />
+            </call>
+
+            <call method="add">
+                <argument type="service" id="csmt.snapshot_filesystem_download" />
             </call>
         </service>
 
@@ -91,6 +99,12 @@
             <argument type="service" id="csmt.responder" />
         </service>
 
+        <service id="csmt.snapshot_database_download" class="Creode\Csmt\Command\Snapshot\Database\SnapshotDownloadCommand">
+            <argument type="service" id="csmt.config" />
+            <argument type="service" id="csmt.storage_awss3" />
+            <argument type="service" id="csmt.responder" />
+        </service>
+
         <service id="csmt.snapshot_filesystem" class="Creode\Csmt\Command\Snapshot\Filesystem\SnapshotCommand">
             <argument type="service" id="csmt.config" />
             <argument type="service" id="csmt.storage_awss3" />
@@ -110,6 +124,12 @@
         </service>
 
         <service id="csmt.snapshot_filesystem_pull" class="Creode\Csmt\Command\Snapshot\Filesystem\SnapshotPullCommand">
+            <argument type="service" id="csmt.config" />
+            <argument type="service" id="csmt.storage_awss3" />
+            <argument type="service" id="csmt.responder" />
+        </service>
+
+        <service id="csmt.snapshot_filesystem_download" class="Creode\Csmt\Command\Snapshot\Filesystem\SnapshotDownloadCommand">
             <argument type="service" id="csmt.config" />
             <argument type="service" id="csmt.storage_awss3" />
             <argument type="service" id="csmt.responder" />

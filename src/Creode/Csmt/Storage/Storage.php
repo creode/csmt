@@ -9,4 +9,6 @@ interface Storage
     public function pull($source, $dest, array $storageDetails);
 
     public function info($source, array $storageDetails);
+
+    public function downloadLink($source, $validFor, array $storageDetails);
 }

@@ -45,6 +45,22 @@ class AwsS3 implements Storage
         return isset($result['Contents'][0]) ? $result['Contents'][0] : false;
     }
 
+    public function downloadLink($source, $validFor, array $storageDetails) 
+    {
+        $client = $this->connect($storageDetails);
+
+        $validFor = is_numeric($validFor) ? $validFor : 5;
+
+        $cmd = $client->getCommand('GetObject', [
+            'Bucket' => $storageDetails['s3']['bucket'],
+            'Key'    => $source
+        ]);
+
+        $result = $client->createPresignedRequest($cmd, '+' . $validFor . ' minutes');
+
+        return (string)$result->getUri();
+    }
+
     /**
      * Connects to storage
      * @param array $storageDetails 
