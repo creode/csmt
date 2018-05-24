@@ -30,9 +30,13 @@ class SnapshotRestoreCommand extends SnapshotRestore
             $dir = $this->getLocalStorageDir();
 
             foreach($databases as $filename => $databaseDetails) {
+                $structureInfile = $dir . SnapshotCommand::STRUCTURE_FILE_PREFIX . $databaseDetails['filename'];
+                $dataInfile = $dir . SnapshotCommand::DATA_FILE_PREFIX . $databaseDetails['filename'];
+
                 // TODO: This shouldn't always be mysql
-                $infile = $dir . $databaseDetails['filename'];
-                exec('mysql -h ' . $databaseDetails['host'] . ' -u ' . $databaseDetails['user'] . " -p'" . $databaseDetails['pass'] . "' " . $databaseDetails['name'] . ' < ' . $infile);
+                $cmdBase = 'mysql -h ' . $databaseDetails['host'] . ' -u ' . $databaseDetails['user'] . " -p'" . $databaseDetails['pass'] . "' " . $databaseDetails['name'] . ' < ';
+                $cmd = $cmdBase . $structureInfile . ' && ' . $cmdBase . $dataInfile;
+                exec($cmd);
             }
         } catch (\Exception $e) {
             $this->sendErrorResponse('There was a problem restoring the ' . $filename . ' database');

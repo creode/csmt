@@ -18,12 +18,27 @@ class SnapshotPullCommand extends SnapshotPull
 
         if (is_array($databases) && count($databases)) {
             foreach($databases as $filename => $databaseDetails) {
-                $outfile = $this->getLocalStorageDir() . $databaseDetails['filename'];
+                $outfilename = SnapshotCommand::STRUCTURE_FILE_PREFIX . $databaseDetails['filename'];
 
-                $this->_storage->pull($databaseDetails['destination'], $outfile, $databaseDetails['storage']);
+                $this->pullFromStorage($outfilename, $databaseDetails);
+
+                $outfilename = SnapshotCommand::DATA_FILE_PREFIX . $databaseDetails['filename'];
+
+                $this->pullFromStorage($outfilename, $databaseDetails);
             }
         }
 
         $this->sendSuccessResponse('Pulled DB snapshots from remote storage');
     }
+
+    private function pullFromStorage($fileName, $databaseDetails) {
+        $localFilePath = $this->getLocalStorageDir() . $fileName;
+
+        // support for old versions of csmt.yml where `destination` was a full file path
+        $destination = isset($databaseDetails['remote_dir'])
+                ? $databaseDetails['remote_dir'] . '/' . $fileName
+                : $databaseDetails['destination'];
+
+        $this->_storage->pull($destination, $localFilePath, $databaseDetails['storage']);
+    }   
 }
