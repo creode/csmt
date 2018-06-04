@@ -2,13 +2,24 @@ environment: test
 project:
  name: what
 databases:
- website:
+ magento:
   host: localhost
   name: what
   pass: what
   user: what
+  data:
+   exclude:
+    - wp_termmeta
+    - wp_commentmeta
+    - wp_postmeta
+   obfuscate:
+    - wp_users: 
+       - user_login
+       - user_email
+       - user_nicename
+       - display_name
   filename: what.sql
-  destination: databases/what.sql
+  remote_dir: databases
   storage: 
    s3:
     access: what
@@ -17,10 +28,13 @@ databases:
     region: eu-west-2
 filesystem:
  files:
-  parentdir: /var/www/html
-  dir: files
-  filename: what.zip
-  destination: media/what.zip
+  parentdir: /var/www/html # the directory above the one to zip (see 'dir' below)
+  dir: uploads # the directory to zip up, it should be just the directory name, the path is 'parentdir'
+  exclude:
+    - cache
+    - something
+  filename: files.zip
+  remote_dir: media
   storage: 
    s3:
     access: what
