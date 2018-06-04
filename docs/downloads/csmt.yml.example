@@ -2,7 +2,7 @@ environment: test
 project:
  name: what
 databases:
- magento:
+ website:
   host: localhost
   name: what
   pass: what
