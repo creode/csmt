@@ -20,45 +20,53 @@ The install will download a `csmt.yml.example` file containing an example config
 ```
 environment: test
 project:
- name: My_Project_Name
+ name: my_project_name
 databases:
  website:
   host: mysql
   name: website
   pass: webpassword
   user: webuser
-  filename: website.sql
-  destination: databases/website.sql
+  data:
+   exclude:
+    - wp_termmeta
+    - wp_commentmeta
+    - wp_postmeta
+   obfuscate:
+    - wp_users:
+      - string:
+        - user_login
+        - user_nicename
+        - display_name
+      - email:
+        - user_email
+  remote_dir: databases
   storage: 
-   s3:
-    access: PASTEACCESSKEYHERE
-    secret: PASTESECRETKEYHERE
-    bucket: example.creode.client
-    region: eu-west-2
- wordpress:
-  host: mysql
-  name: website
-  pass: webpassword
-  user: webuser
-  filename: wordpress.sql
-  destination: databases/wordpress.sql
-  storage: 
-   s3:
-    access: PASTEACCESSKEYHERE
-    secret: PASTESECRETKEYHERE
-    bucket: example.creode.client
-    region: eu-west-2
+    general: general_s3
+    obfuscated: obfuscated_s3
 filesystem:
- en_files:
-  parentdir: /var/www/html
-  dir: files
-  filename: en_files.zip
-  destination: media/en_files.zip
+ my_zipped_stuff:
+  zip_dir: uploads # the directory to zip up, it should be just the directory name, the path is 'parent_dir'
+  parent_dir: /var/www/html # the directory above the one to zip (see 'zip_dir' above)
+  remote_dir: media # the directory of the file in the remote storage
+  exclude:
+    - list
+    - of
+    - excluded
+    - dir
+    - names
   storage: 
-   s3:
+    general: general_s3
+storage:
+  general_s3:
     access: PASTEACCESSKEYHERE
     secret: PASTESECRETKEYHERE
     bucket: example.creode.client
+    region: eu-west-2
+  obfuscated_s3:
+    access: PASTEACCESSKEYHERE
+    secret: PASTESECRETKEYHERE
+    bucket: example.creode.client.obfuscated
     region: eu-west-2
 ```
 

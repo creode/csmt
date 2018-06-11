@@ -3,11 +3,14 @@
 namespace Creode\Csmt\Command\Snapshot\Database;
 
 use Creode\Csmt\Command\Snapshot\SnapshotTaker;
+use Symfony\Component\Yaml\Yaml;
 
 class SnapshotCommand extends SnapshotTaker
 {
-    const STRUCTURE_FILE_PREFIX = '01_structure_';
-    const DATA_FILE_PREFIX = '02_data_';
+    const STRUCTURE_FILENAME = '01_structure.sql';
+    const DATA_FILENAME = '02_data.sql';
+    const OBFUSCATED_DATA_FILENAME = '03_data_obfuscated.sql';
+    const OBFUSCATION_MANIFEST = 'manifest.yml';
 
     protected function configure()
     {
@@ -29,9 +32,10 @@ class SnapshotCommand extends SnapshotTaker
 
         try {
             if (count($databases)) {
-                foreach($databases as $filename => $databaseDetails) {
-                    $this->takeStructureSnapshot($databaseDetails);
-                    $this->takeDataSnapshot($databaseDetails);
+                foreach($databases as $name => $config) {
+                    $this->takeStructureSnapshot($config);
+                    $this->takeDataSnapshot($config);
+                    $this->takeObfuscatedDataSnapshot($config);
                 }
             }
 
@@ -42,48 +46,105 @@ class SnapshotCommand extends SnapshotTaker
     }
 
 
-    private function takeStructureSnapshot($databaseDetails) {
-        $outfilename = self::STRUCTURE_FILE_PREFIX . $databaseDetails['filename'];
-        $outfile = $this->getLocalStorageDir() . $outfilename;
+    private function takeStructureSnapshot($config) {
+        $localFilename = self::STRUCTURE_FILENAME;
+        $localFile = $this->getLocalStorageDir() . $localFilename;
 
         // TODO: This shouldn't always be mysql
-        $cmd = 'mysqldump --no-data -h ' . $databaseDetails['host'] . ' -u ' . $databaseDetails['user'] . " -p'" . $databaseDetails['pass'] . "' " . $databaseDetails['name'] . ' > ' . $outfile;
+        $cmd = 'mysqldump --no-data -h ' . $config['host'] . ' -u ' . $config['user'] . " -p'" . $config['pass'] . "' " . $config['name'] . ' > ' . $localFile;
         exec($cmd);
 
-        $this->pushToStorage($outfile, $outfilename, $databaseDetails);
+        $this->pushToStorage(
+            $localFile,
+            $config['remote_dir'],
+            $localFilename,
+            $config['storage']['general']
+        );
     }
 
-    private function takeDataSnapshot($databaseDetails) {
+
+    private function takeDataSnapshot($config) {
         $additionalParams = [];
 
-        if (isset($databaseDetails['data'])) {
-            if (isset($databaseDetails['data']['exclude'])) {
-                foreach($databaseDetails['data']['exclude'] as $table) {
-                    $additionalParams[] = '--ignore-table=' . $databaseDetails['name'] . '.' . $table;
+        if (isset($config['data'])) {
+            if (isset($config['data']['exclude'])) {
+                foreach($config['data']['exclude'] as $table) {
+                    $additionalParams[] = '--ignore-table=' . $config['name'] . '.' . $table;
                 }
             }
         }
 
-        $outfilename = self::DATA_FILE_PREFIX . $databaseDetails['filename'];
-        $outfile = $this->getLocalStorageDir() . $outfilename;
+        $localFilename = self::DATA_FILENAME;
+        $localFile = $this->getLocalStorageDir() . $localFilename;
 
         // TODO: This shouldn't always be mysql
-        $cmd = 'mysqldump --no-create-info ' . implode(' ', $additionalParams) . ' -h ' . $databaseDetails['host'] . ' -u ' . $databaseDetails['user'] . " -p'" . $databaseDetails['pass'] . "' " . $databaseDetails['name'] . ' > ' . $outfile;
+        $cmd = 'mysqldump --no-create-info ' . implode(' ', $additionalParams) . ' -h ' . $config['host'] . ' -u ' . $config['user'] . " -p'" . $config['pass'] . "' " . $config['name'] . ' > ' . $localFile;
         exec($cmd);
 
-        $this->pushToStorage($outfile, $outfilename, $databaseDetails);
+        $this->pushToStorage(
+            $localFile,
+            $config['remote_dir'],
+            $localFilename,
+            $config['storage']['general']
+        );
     }
 
-    private function pushToStorage($file, $destinationFileName, $databaseDetails) {
-        if (filesize($file) == 0) {
-            throw new \Exception('Dump file (' . $file . ') size is zero');
+
+    private function takeObfuscatedDataSnapshot($config) {
+        $tables = [];
+
+        if (isset($config['data'])) {
+            if (isset($config['data']['obfuscate'])) {
+                foreach($config['data']['obfuscate'] as $table) {
+                    foreach($table as $name => $fields) {
+                        $tables[] = $name;
+                    }
+                }
+            }
         }
 
-        // support for old versions of csmt.yml where `destination` was a full file path
-        $destination = isset($databaseDetails['remote_dir'])
-                ? $databaseDetails['remote_dir'] . '/' . $destinationFileName
-                : $databaseDetails['destination'];
+        $localFilename = self::OBFUSCATED_DATA_FILENAME;
+        $localFile = $this->getLocalStorageDir() . $localFilename;
 
-        $this->_storage->push($file, $destination, $databaseDetails['storage']);
-    }        
+        // TODO: This shouldn't always be mysql
+        $cmd = 'mysqldump --no-create-info -h ' . $config['host'] . ' -u ' . $config['user'] . " -p'" . $config['pass'] . "' " . $config['name'] . ' ' . implode(' ', $tables) . ' > ' . $localFile;
+        exec($cmd);
+
+        $project = $this->_config->get('project');
+        $storagePrefix = $project['name'] . DIRECTORY_SEPARATOR;
+
+        $this->pushToStorage(
+            $localFile,
+            $storagePrefix . $config['remote_dir'],
+            $localFilename,
+            $config['storage']['obfuscated']
+        );
+
+        $this->generateObfuscationManifest($config);
+    }
+
+    private function generateObfuscationManifest($config) {
+        $localManifestFilename = self::OBFUSCATION_MANIFEST;
+        $localManifestFile = $this->getLocalStorageDir() . $localManifestFilename;
+
+        $generalStorageDetails = $this->getStorageDetails($config['storage']['general']);
+
+        $manifestData = array(
+            'bucket' => $generalStorageDetails['bucket'],
+            'data' => $config['data']['obfuscate']
+        );
+
+        $manifestYaml = Yaml::dump($manifestData);
+        file_put_contents($localManifestFile, $manifestYaml);
+
+        $project = $this->_config->get('project');
+        $storagePrefix = $project['name'] . DIRECTORY_SEPARATOR;
+
+        $this->pushToStorage(
+            $localManifestFile,
+            $storagePrefix . $config['remote_dir'],
+            $localManifestFilename,
+            $config['storage']['obfuscated']
+        );
+    }   
 }

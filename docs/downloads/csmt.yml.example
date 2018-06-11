@@ -13,31 +13,38 @@ databases:
     - wp_commentmeta
     - wp_postmeta
    obfuscate:
-    - wp_users: 
-       - user_login
-       - user_email
-       - user_nicename
-       - display_name
-  filename: what.sql
+    - wp_users:
+      - string:
+        - user_login
+        - user_nicename
+        - display_name
+      - email:
+        - user_email
   remote_dir: databases
   storage: 
-   s3:
+    general: general_s3
+    obfuscated: obfuscated_s3
+filesystem:
+ my_zipped_stuff:
+  zip_dir: uploads # the directory to zip up, it should be just the directory name, the path is 'parent_dir'
+  parent_dir: /var/www/html # the directory above the one to zip (see 'zip_dir' above)
+  remote_dir: media # the directory of the file in the remote storage
+  exclude:
+    - list
+    - of
+    - excluded
+    - dir
+    - names
+  storage: 
+    general: general_s3
+storage:
+  general_s3:
     access: what
     secret: what
     bucket: backups.creode.what
     region: eu-west-2
-filesystem:
- files:
-  parentdir: /var/www/html # the directory above the one to zip (see 'dir' below)
-  dir: uploads # the directory to zip up, it should be just the directory name, the path is 'parentdir'
-  exclude:
-    - cache
-    - something
-  filename: files.zip
-  remote_dir: media
-  storage: 
-   s3:
+  obfuscated_s3:
     access: what
     secret: what
-    bucket: backups.creode.what
+    bucket: obfuscated.creode.what
     region: eu-west-2

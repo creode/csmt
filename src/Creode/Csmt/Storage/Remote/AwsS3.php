@@ -11,7 +11,7 @@ class AwsS3 implements Storage
         $client = $this->connect($storageDetails);
 
         $result = $client->putObject([
-            'Bucket'     => $storageDetails['s3']['bucket'],
+            'Bucket'     => $storageDetails['bucket'],
             'Key'        => $dest,
             'SourceFile' => $source,
         ]);
@@ -26,7 +26,7 @@ class AwsS3 implements Storage
         $client = $this->connect($storageDetails);
 
         $result = $client->getObject([
-            'Bucket'     => $storageDetails['s3']['bucket'],
+            'Bucket'     => $storageDetails['bucket'],
             'Key'        => $source,
             'SaveAs'     => $dest,
         ]);
@@ -37,7 +37,7 @@ class AwsS3 implements Storage
         $client = $this->connect($storageDetails);
 
         $result = $client->listObjects([
-            'Bucket'    => $storageDetails['s3']['bucket'],
+            'Bucket'    => $storageDetails['bucket'],
             'MaxKeys'   => 1,
             'Prefix'    => $source,
         ]);
@@ -52,7 +52,7 @@ class AwsS3 implements Storage
         $validFor = is_numeric($validFor) ? $validFor : 5;
 
         $cmd = $client->getCommand('GetObject', [
-            'Bucket' => $storageDetails['s3']['bucket'],
+            'Bucket' => $storageDetails['bucket'],
             'Key'    => $source
         ]);
 
@@ -67,16 +67,21 @@ class AwsS3 implements Storage
      * @return \Aws\S3\S3Client
      */
     private function connect(array $storageDetails) {
-        if (!isset($storageDetails['s3'])) {
-            throw new \Exception('S3 Credentials are missing from config file');
+        if (
+            !isset($storageDetails['access']) ||
+            !isset($storageDetails['secret']) ||
+            !isset($storageDetails['region']) ||
+            !isset($storageDetails['bucket'])
+        ) {
+            throw new \Exception('S3 config requires access, secret, bucket and region nodes to be defined');
         }
 
         $client = new \Aws\S3\S3Client([
-            'region'  => $storageDetails['s3']['region'],
+            'region'  => $storageDetails['region'],
             'version' => 'latest',
             'credentials' => [
-                'key'    => $storageDetails['s3']['access'],
-                'secret' => $storageDetails['s3']['secret'],
+                'key'    => $storageDetails['access'],
+                'secret' => $storageDetails['secret'],
             ],
         ]);
 

@@ -22,7 +22,7 @@ class SnapshotDownloadCommand extends SnapshotDownload
 
         if (is_array($databases) && count($databases)) {
             foreach($databases as $filename => $databaseDetails) {
-                $filename = SnapshotCommand::STRUCTURE_FILE_PREFIX . $databaseDetails['filename'];
+                $filename = SnapshotCommand::STRUCTURE_FILENAME;
 
                 // support for old versions of csmt.yml where `destination` was a full file path
                 $destination = isset($databaseDetails['remote_dir'])
@@ -30,10 +30,9 @@ class SnapshotDownloadCommand extends SnapshotDownload
                         : $databaseDetails['destination'];
 
                 $links[$filename] = $this->_storage->downloadLink($destination, $duration, $databaseDetails['storage']);
-
                 
 
-                $filename = SnapshotCommand::DATA_FILE_PREFIX . $databaseDetails['filename'];
+                $filename = SnapshotCommand::DATA_FILENAME;
 
                 // support for old versions of csmt.yml where `destination` was a full file path
                 $destination = isset($databaseDetails['remote_dir'])

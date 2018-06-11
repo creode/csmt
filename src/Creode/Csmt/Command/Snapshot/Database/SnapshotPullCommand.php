@@ -18,11 +18,11 @@ class SnapshotPullCommand extends SnapshotPull
 
         if (is_array($databases) && count($databases)) {
             foreach($databases as $filename => $databaseDetails) {
-                $outfilename = SnapshotCommand::STRUCTURE_FILE_PREFIX . $databaseDetails['filename'];
+                $outfilename = SnapshotCommand::STRUCTURE_FILENAME;
 
                 $this->pullFromStorage($outfilename, $databaseDetails);
 
-                $outfilename = SnapshotCommand::DATA_FILE_PREFIX . $databaseDetails['filename'];
+                $outfilename = SnapshotCommand::DATA_FILENAME;
 
                 $this->pullFromStorage($outfilename, $databaseDetails);
             }

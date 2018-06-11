@@ -26,12 +26,17 @@ class SnapshotCommand extends SnapshotTaker
 
         if (count($filesystem)) {
             foreach($filesystem as $label => $details) {
-                // TODO: This shouldn't always be zip
-                $outfile = $this->getLocalStorageDir() . $details['filename'];
-                // echo 'cd ' . $details['parentdir'] . ' && zip -r ' . $outfile . ' ' . $details['dir']; exit;
-                exec('cd ' . $details['parentdir'] . ' && zip -r ' . $outfile . ' ' . $details['dir']);
+                $zipFilename = strtolower($details['zip_dir']) . '.zip';
+                $localFile = $this->getLocalStorageDir() . $zipFilename;
 
-                $this->_storage->push($outfile, $details['destination'], $details['storage']);
+                $excludes = isset($details['exclude']) && count($details['exclude'])
+                    ? sprintf(' -x \*%s\*', implode('\* -x \*', $details['exclude']))
+                    : '';
+
+                // TODO: This shouldn't always be zip
+                exec('cd ' . $details['parent_dir'] . ' && zip -r ' . $localFile . ' ' . $details['zip_dir'] . $excludes);
+
+                $this->pushToStorage($localFile, $details['remote_dir'], $zipFilename, $details['storage']['general']);
             }
         }
 
