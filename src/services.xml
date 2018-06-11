@@ -59,6 +59,10 @@
             <call method="add">
                 <argument type="service" id="csmt.snapshot_filesystem_download" />
             </call>
+
+            <call method="add">
+                <argument type="service" id="csmt.snapshot_modules" />
+            </call>
         </service>
 
 
@@ -135,6 +139,11 @@
             <argument type="service" id="csmt.responder" />
         </service>
 
+        <service id="csmt.snapshot_modules" class="Creode\Csmt\Command\Snapshot\Modules\SnapshotCommand">
+            <argument type="service" id="csmt.config" />
+            <argument type="service" id="csmt.storage_awss3" />
+            <argument type="service" id="csmt.responder" />
+        </service>
 
 
         <!-- Entities -->

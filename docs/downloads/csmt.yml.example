@@ -1,6 +1,7 @@
 environment: test
 project:
  name: what
+ framework: exampleFramework
 databases:
  website:
   host: localhost
@@ -41,3 +42,6 @@ filesystem:
     secret: what
     bucket: backups.creode.what
     region: eu-west-2
+modules:
+ moduledir:
+  - /path/to/modules
