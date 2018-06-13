@@ -107,7 +107,7 @@ class SnapshotCommand extends SnapshotTaker
         $localFile = $this->getLocalStorageDir() . $localFilename;
 
         // TODO: This shouldn't always be mysql
-        $cmd = 'mysqldump --no-create-info -h ' . $config['host'] . ' -u ' . $config['user'] . " -p'" . $config['pass'] . "' " . $config['name'] . ' ' . implode(' ', $tables) . ' > ' . $localFile;
+        $cmd = 'mysqldump -h ' . $config['host'] . ' -u ' . $config['user'] . " -p'" . $config['pass'] . "' " . $config['name'] . ' ' . implode(' ', $tables) . ' > ' . $localFile;
         exec($cmd);
 
         $project = $this->_config->get('project');
@@ -130,7 +130,15 @@ class SnapshotCommand extends SnapshotTaker
         $generalStorageDetails = $this->getStorageDetails($config['storage']['general']);
 
         $manifestData = array(
-            'bucket' => $generalStorageDetails['bucket'],
+            'destination' => [
+                'type' => 'S3',
+                'bucket' => $generalStorageDetails['bucket'],
+                'region' => $generalStorageDetails['region'],
+                'access' => $generalStorageDetails['access'],
+                'secret' => $generalStorageDetails['secret'],
+                'dir' => $config['remote_dir'],
+                'filename' => self::OBFUSCATED_DATA_FILENAME
+            ],
             'data' => $config['data']['obfuscate']
         );
 

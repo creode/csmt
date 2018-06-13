@@ -14,12 +14,12 @@ databases:
     - wp_postmeta
    obfuscate:
     - wp_users:
-      - string:
-        - user_login
-        - user_nicename
-        - display_name
-      - email:
-        - user_email
+        string:
+         - user_login
+         - user_nicename
+         - display_name
+        email:
+         - user_email
   remote_dir: databases
   storage: 
     general: general_s3
