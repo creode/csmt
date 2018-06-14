@@ -26,6 +26,18 @@ abstract class SnapshotDownload extends Snapshot
         $this->downloadSnapshot($duration);
     }
 
+    protected function addFileToDownload(array &$downloadLinks, $filename, $duration, array $details)
+    {
+        // support for old versions of csmt.yml where `destination` was a full file path
+        $destination = isset($details['remote_dir'])
+                ? $details['remote_dir'] . '/' . $filename
+                : $details['destination'];
+
+        $storage = $this->getStorageDetails($details['storage']['general']);
+
+        $downloadLinks[$filename] = $this->_storage->downloadLink($destination, $duration, $storage);
+    }
+
     /**
      * Downloads a snapshot
      */

@@ -22,7 +22,8 @@ class SnapshotDownloadCommand extends SnapshotDownload
 
         if (is_array($filesystem) && count($filesystem)) {
             foreach($filesystem as $label => $details) {
-                $links[$label] = $this->_storage->downloadLink($details['destination'], $duration, $details['storage']);
+                $zipFilename = strtolower($details['zip_dir']) . '.zip';
+                $this->addFileToDownload($links, $zipFilename, $duration, $details);
             }
         }
 
