@@ -40,6 +40,16 @@ class SnapshotDownloadCommand extends SnapshotDownload
                         : $databaseDetails['destination'];
 
                 $links[$filename] = $this->_storage->downloadLink($destination, $duration, $databaseDetails['storage']);
+
+
+                $filename = SnapshotCommand::OBFUSCATED_DATA_FILENAME;
+
+                // support for old versions of csmt.yml where `destination` was a full file path
+                $destination = isset($databaseDetails['remote_dir'])
+                        ? $databaseDetails['remote_dir'] . '/' . $fileName
+                        : $databaseDetails['destination'];
+
+                $links[$filename] = $this->_storage->downloadLink($destination, $duration, $databaseDetails['storage']);                
             }
         }
 
