@@ -50,7 +50,7 @@ abstract class SnapshotDetails extends Snapshot
         $info = $this->_storage->info($details['remote_dir'], $storage);
 
         foreach($info as $remoteFile) {
-            $file = new \Creode\Csmt\System\File(basename($remoteFile['Key']));
+            $file = new \Creode\Csmt\System\File($remoteFile['Key']);
 
             $dateTime = \DateTime::createFromFormat(\DateTime::ISO8601, $remoteFile['LastModified']);
 
@@ -69,13 +69,13 @@ abstract class SnapshotDetails extends Snapshot
      */
     protected function getTestSnapshotInfo(array $details, $name)
     {
-        $localStorageDirectory = $this->getLocalStorageDir() . $details['remote_dir'] . DIRECTORY_SEPARATOR;
+        $localStorageDirectory = $this->getLocalStorageDir() . $details['remote_dir'];
 
         $finder = new Finder();
         $finder->files()->in($localStorageDirectory)->sortByName();
 
         foreach ($finder as $snapshotFile) {
-            $file = new \Creode\Csmt\System\File($snapshotFile->getRelativePathname());
+            $file = new \Creode\Csmt\System\File($snapshotFile->getPathname());
 
             if (file_exists($snapshotFile->getRealPath())) {
                 $date = date(\DateTime::ISO8601, filemtime($snapshotFile->getRealPath()));
