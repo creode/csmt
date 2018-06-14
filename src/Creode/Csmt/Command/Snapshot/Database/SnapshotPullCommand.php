@@ -37,6 +37,10 @@ class SnapshotPullCommand extends SnapshotPull
 
         $storage = $this->getStorageDetails($databaseDetails['storage']['general']);
 
-        $this->_storage->pull($destination, $localFilePath, $storage);
+        try {
+            $this->_storage->pull($destination, $localFilePath, $storage);
+        } catch (\Exception $e) {
+            // it's not really a problem if it fails to download something
+        }
     }   
 }
