@@ -38,11 +38,11 @@ class AwsS3 implements Storage
 
         $result = $client->listObjects([
             'Bucket'    => $storageDetails['bucket'],
-            'MaxKeys'   => 1,
+            'MaxKeys'   => 100,
             'Prefix'    => $source,
         ]);
 
-        return isset($result['Contents'][0]) ? $result['Contents'][0] : false;
+        return isset($result['Contents']) ? $result['Contents'] : false;
     }
 
     public function downloadLink($source, $validFor, array $storageDetails) 
