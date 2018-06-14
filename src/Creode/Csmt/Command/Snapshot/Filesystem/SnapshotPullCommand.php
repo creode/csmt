@@ -18,9 +18,17 @@ class SnapshotPullCommand extends SnapshotPull
 
         if (is_array($filesystem) && count($filesystem)) {
             foreach($filesystem as $label => $details) {
-                $outfile = $this->getLocalStorageDir() . $details['filename'];
+                $zipFilename = strtolower($details['zip_dir']) . '.zip';
+                $localFilePath = $this->getLocalStorageDir() . $details['remote_dir'] . DIRECTORY_SEPARATOR . $zipFilename;
 
-                $this->_storage->pull($details['destination'], $outfile, $details['storage']);
+                // support for old versions of csmt.yml where `destination` was a full file path
+                $destination = isset($details['remote_dir'])
+                    ? $details['remote_dir'] . '/' . $zipFilename
+                    : $details['destination'];
+
+                $storage = $this->getStorageDetails($details['storage']['general']);
+
+                $this->_storage->pull($destination, $localFilePath, $storage);
             }
         }
 

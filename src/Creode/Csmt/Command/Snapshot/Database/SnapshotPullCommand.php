@@ -18,13 +18,9 @@ class SnapshotPullCommand extends SnapshotPull
 
         if (is_array($databases) && count($databases)) {
             foreach($databases as $filename => $databaseDetails) {
-                $outfilename = SnapshotCommand::STRUCTURE_FILENAME;
-
-                $this->pullFromStorage($outfilename, $databaseDetails);
-
-                $outfilename = SnapshotCommand::DATA_FILENAME;
-
-                $this->pullFromStorage($outfilename, $databaseDetails);
+                $this->pullFromStorage(SnapshotCommand::STRUCTURE_FILENAME, $databaseDetails);
+                $this->pullFromStorage(SnapshotCommand::DATA_FILENAME, $databaseDetails);
+                $this->pullFromStorage(SnapshotCommand::OBFUSCATED_DATA_FILENAME, $databaseDetails);
             }
         }
 
@@ -32,13 +28,15 @@ class SnapshotPullCommand extends SnapshotPull
     }
 
     private function pullFromStorage($fileName, $databaseDetails) {
-        $localFilePath = $this->getLocalStorageDir() . $fileName;
+        $localFilePath = $this->getLocalStorageDir() . $databaseDetails['remote_dir'] . DIRECTORY_SEPARATOR . $fileName;
 
         // support for old versions of csmt.yml where `destination` was a full file path
         $destination = isset($databaseDetails['remote_dir'])
-                ? $databaseDetails['remote_dir'] . '/' . $fileName
-                : $databaseDetails['destination'];
+            ? $databaseDetails['remote_dir'] . '/' . $fileName
+            : $databaseDetails['destination'];
 
-        $this->_storage->pull($destination, $localFilePath, $databaseDetails['storage']);
+        $storage = $this->getStorageDetails($databaseDetails['storage']['general']);
+
+        $this->_storage->pull($destination, $localFilePath, $storage);
     }   
 }

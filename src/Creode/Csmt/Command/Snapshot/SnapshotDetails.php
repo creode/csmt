@@ -5,6 +5,7 @@ namespace Creode\Csmt\Command\Snapshot;
 use Creode\Csmt\System\File;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
+use Symfony\Component\Finder\Finder;
 
 abstract class SnapshotDetails extends Snapshot
 {
@@ -44,16 +45,20 @@ abstract class SnapshotDetails extends Snapshot
      */
     protected function getLiveSnapshotInfo(array $details, $name)
     {
-        $info = $this->_storage->info($details['destination'], $details['storage']);
+        $storage = $this->getStorageDetails($details['storage']['general']);
 
-        $file = new \Creode\Csmt\System\File($info['Key']);
+        $info = $this->_storage->info($details['remote_dir'], $storage);
 
-        $dateTime = \DateTime::createFromFormat ( \DateTime::ISO8601 , $info['LastModified'] );
+        foreach($info as $remoteFile) {
+            $file = new \Creode\Csmt\System\File(basename($remoteFile['Key']));
 
-        $file->date($dateTime)
-            ->size($info['Size']);
+            $dateTime = \DateTime::createFromFormat(\DateTime::ISO8601, $remoteFile['LastModified']);
 
-        $this->addFileToResponse($file);
+            $file->date($dateTime)
+                ->size($remoteFile['Size']);
+
+            $this->addFileToResponse($file);
+        }
     }
 
     /**
@@ -64,21 +69,26 @@ abstract class SnapshotDetails extends Snapshot
      */
     protected function getTestSnapshotInfo(array $details, $name)
     {
-        $path = $this->getLocalStorageDir() . $details['filename'];
+        $localStorageDirectory = $this->getLocalStorageDir() . $details['remote_dir'] . DIRECTORY_SEPARATOR;
 
-        $file = new \Creode\Csmt\System\File($path);
+        $finder = new Finder();
+        $finder->files()->in($localStorageDirectory)->sortByName();
 
-        if (file_exists($path)) {
-            $date = date(\DateTime::ISO8601, filemtime($path));
-            $dateTime = \DateTime::createFromFormat ( \DateTime::ISO8601 , $date );
+        foreach ($finder as $snapshotFile) {
+            $file = new \Creode\Csmt\System\File($snapshotFile->getRelativePathname());
 
-            $file->date($dateTime)
-                ->size(filesize($path));           
-        } else {
-            $file->size(-1);
+            if (file_exists($snapshotFile->getRealPath())) {
+                $date = date(\DateTime::ISO8601, filemtime($snapshotFile->getRealPath()));
+                $dateTime = \DateTime::createFromFormat ( \DateTime::ISO8601 , $date );
+
+                $file->date($dateTime)
+                    ->size(filesize($snapshotFile->getRealPath()));           
+            } else {
+                $file->size(-1);
+            }
+
+            $this->addFileToResponse($file);
         }
-
-        $this->addFileToResponse($file);
     }
 
     /**
