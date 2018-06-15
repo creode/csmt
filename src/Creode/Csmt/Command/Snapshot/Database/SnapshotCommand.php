@@ -102,11 +102,13 @@ class SnapshotCommand extends SnapshotTaker
         $tables = [];
 
         if (isset($config['data'])) {
-            if (isset($config['data']['obfuscate'])) {
-                foreach($config['data']['obfuscate'] as $table) {
-                    foreach($table as $name => $fields) {
-                        $tables[] = $name;
-                    }
+            if (!isset($config['data']['obfuscate'])) {
+                return;
+            }
+
+            foreach($config['data']['obfuscate'] as $table) {
+                foreach($table as $name => $fields) {
+                    $tables[] = $name;
                 }
             }
         }

@@ -25,11 +25,18 @@ class AwsS3 implements Storage
         
         $client = $this->connect($storageDetails);
 
-        $result = $client->getObject([
-            'Bucket'     => $storageDetails['bucket'],
-            'Key'        => $source,
-            'SaveAs'     => $dest,
-        ]);
+        $result = $client->doesObjectExist(
+            $storageDetails['bucket'],
+            $source
+        );
+
+        if ($result === true) {
+            $result = $client->getObject([
+                'Bucket'     => $storageDetails['bucket'],
+                'Key'        => $source,
+                'SaveAs'     => $dest,
+            ]);
+        }
     }
 
     public function info($source, array $storageDetails)
