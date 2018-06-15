@@ -27,16 +27,29 @@ class SnapshotRestoreCommand extends SnapshotRestore
         }
 
         try {
-            $dir = $this->getLocalStorageDir();
-
             foreach($databases as $filename => $databaseDetails) {
+                $dir = $this->getLocalStorageDir() . $databaseDetails['remote_dir'] . DIRECTORY_SEPARATOR;
                 $structureInfile = $dir . SnapshotCommand::STRUCTURE_FILENAME;
                 $dataInfile = $dir . SnapshotCommand::DATA_FILENAME;
+                $obfuscatedDataInfile = $dir . SnapshotCommand::OBFUSCATED_DATA_FILENAME;
 
                 // TODO: This shouldn't always be mysql
                 $cmdBase = 'mysql -h ' . $databaseDetails['host'] . ' -u ' . $databaseDetails['user'] . " -p'" . $databaseDetails['pass'] . "' " . $databaseDetails['name'] . ' < ';
-                $cmd = $cmdBase . $structureInfile . ' && ' . $cmdBase . $dataInfile;
-                exec($cmd);
+                
+                if (file_exists($structureInfile)) {
+                    $cmd = $cmdBase . $structureInfile;
+                    exec($cmd);
+                }
+
+                if (file_exists($dataInfile)) {
+                    $cmd = $cmdBase . $dataInfile;
+                    exec($cmd);
+                }
+
+                if (file_exists($obfuscatedDataInfile)) {
+                    $cmd = $cmdBase . $obfuscatedDataInfile;
+                    exec($cmd);
+                }
             }
         } catch (\Exception $e) {
             $this->sendErrorResponse('There was a problem restoring the ' . $filename . ' database');
