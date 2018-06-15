@@ -101,11 +101,13 @@ class SnapshotCommand extends SnapshotTaker
     private function takeObfuscatedDataSnapshot($config) {
         $tables = [];
 
-        if (isset($config['data'])) {
-            if (!isset($config['data']['obfuscate'])) {
-                return;
-            }
+        if (!isset($config['data']['obfuscate']) 
+        || !isset($config['storage']['obfuscated'])
+        ) {
+            return;
+        }
 
+        if (isset($config['data'])) {
             foreach($config['data']['obfuscate'] as $table) {
                 foreach($table as $name => $fields) {
                     $tables[] = $name;
