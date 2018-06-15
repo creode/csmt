@@ -72,6 +72,14 @@ class SnapshotCommand extends SnapshotTaker
                     $additionalParams[] = '--ignore-table=' . $config['name'] . '.' . $table;
                 }
             }
+
+            if (isset($config['data']['obfuscate'])) {
+                foreach($config['data']['obfuscate'] as $table) {
+                    foreach($table as $name => $fields) {
+                        $additionalParams[] = '--ignore-table=' . $config['name'] . '.' . $name;
+                    }
+                }
+            }
         }
 
         $localFilename = self::DATA_FILENAME;
