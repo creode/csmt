@@ -26,7 +26,9 @@ abstract class SnapshotDetails extends Snapshot
      */
     protected function addFileToResponse(File $file) 
     {
-        $this->_files[] = $file;
+        if (!in_array($file, $this->_files)) {
+            $this->_files[] = $file;
+        }
     }
 
     /**
