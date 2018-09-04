@@ -19,6 +19,7 @@ $loader->load('services.xml');
 try {
     // Create application so we can register additional commands in plugins
     $application = $container->get('symfony.application');
+    $application->setCatchExceptions(false);
 
     // run the app
     $output = $container->get('symfony.console_output');
