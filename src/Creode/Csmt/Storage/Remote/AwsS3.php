@@ -34,7 +34,7 @@ class AwsS3 implements Storage
             throw new \Exception("Cannot find $source in source bucket");
         }
 
-        if (!is_writeable(dirname($dest)) || !is_writeable($dest)) {
+        if (!is_writeable(dirname($dest)) || (file_exists($dest) && !is_writeable($dest))) {
             throw new \Exception('Cannot write file ' . $dest);
         }
 
