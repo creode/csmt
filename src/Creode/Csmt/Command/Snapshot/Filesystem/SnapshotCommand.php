@@ -29,6 +29,10 @@ class SnapshotCommand extends SnapshotTaker
                 $zipFilename = strtolower($details['zip_dir']) . '.zip';
                 $localFile = $this->getLocalStorageDir() . $zipFilename;
 
+                if (!is_writeable(dirname($localFile)) || (file_exists($localFile) && !is_writeable($localFile))) {
+                    throw new \Exception('Cannot write file ' . $localFile);
+                }
+
                 if (!file_exists($details['parent_dir'])) {
                     throw new \Exception('parent_dir does not exist, expected ' . $details['parent_dir']);
                 }
