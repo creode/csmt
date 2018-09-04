@@ -26,17 +26,23 @@ class SnapshotRestoreCommand extends SnapshotRestore
             $this->sendErrorResponse('unzip - command not found');
         }
 
-        try {
-            $dir = $this->getLocalStorageDir();
+        foreach($filesystem as $label => $details) {
+            $zipFilename = strtolower($details['zip_dir']) . '.zip';
+            $localFilePath = $this->getLocalStorageDir() . $details['remote_dir'] . DIRECTORY_SEPARATOR . $zipFilename;            
 
-            foreach($filesystem as $label => $details) {
-                $zipFilename = strtolower($details['zip_dir']) . '.zip';
-                // TODO: This shouldn't always be unzip
-                $infile = $this->getLocalStorageDir() . $zipFilename;
-                exec('cd ' . $details['parentdir'] . ' && unzip ' . $infile);
+            if (!file_exists($localFilePath)) {
+                throw new \Exception("Could not find file to restore, expected $localFilePath");
             }
-        } catch (\Exception $e) {
-            $this->sendErrorResponse('There was a problem restoring ' . $zipFilename);
+
+            try {
+                exec('cd ' . $details['parent_dir'] . ' && unzip -qq -o ' . $localFilePath, $output, $returnVar);
+
+                if ($returnVar !== 0) {
+                    throw new \Exception('Unzip failed');
+                }
+            } catch (\Exception $e) {
+                $this->sendErrorResponse('There was a problem restoring ' . $zipFilename);
+            }
         }
 
         $this->sendSuccessResponse('Restored filesystem snapshots');
