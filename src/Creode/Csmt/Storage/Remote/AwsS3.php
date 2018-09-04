@@ -30,13 +30,19 @@ class AwsS3 implements Storage
             $source
         );
 
-        if ($result === true) {
-            $result = $client->getObject([
-                'Bucket'     => $storageDetails['bucket'],
-                'Key'        => $source,
-                'SaveAs'     => $dest,
-            ]);
+        if (!$result) {
+            throw new \Exception("Cannot find $source in source bucket");
         }
+
+        if (!is_writeable(dirname($dest)) || !is_writeable($dest)) {
+            throw new \Exception('Cannot write file ' . $dest);
+        }
+
+        $result = $client->getObject([
+            'Bucket'     => $storageDetails['bucket'],
+            'Key'        => $source,
+            'SaveAs'     => $dest,
+        ]);
     }
 
     public function info($source, array $storageDetails)
