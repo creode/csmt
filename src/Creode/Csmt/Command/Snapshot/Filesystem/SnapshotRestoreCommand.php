@@ -30,12 +30,13 @@ class SnapshotRestoreCommand extends SnapshotRestore
             $dir = $this->getLocalStorageDir();
 
             foreach($filesystem as $label => $details) {
+                $zipFilename = strtolower($details['zip_dir']) . '.zip';
                 // TODO: This shouldn't always be unzip
-                $infile = $this->getLocalStorageDir() . $details['filename'];
+                $infile = $this->getLocalStorageDir() . $zipFilename;
                 exec('cd ' . $details['parentdir'] . ' && unzip ' . $infile);
             }
         } catch (\Exception $e) {
-            $this->sendErrorResponse('There was a problem restoring ' . $filename);
+            $this->sendErrorResponse('There was a problem restoring ' . $zipFilename);
         }
 
         $this->sendSuccessResponse('Restored filesystem snapshots');
