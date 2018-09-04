@@ -29,6 +29,14 @@ class SnapshotCommand extends SnapshotTaker
                 $zipFilename = strtolower($details['zip_dir']) . '.zip';
                 $localFile = $this->getLocalStorageDir() . $zipFilename;
 
+                if (!file_exists($details['parent_dir'])) {
+                    throw new \Exception('parent_dir does not exist, expected ' . $details['parent_dir']);
+                }
+
+                if (!file_exists($details['parent_dir'] . DIRECTORY_SEPARATOR . $details['zip_dir'])) {
+                    throw new \Exception('zip_dir does not exist, expected ' . $details['parent_dir'] . DIRECTORY_SEPARATOR . $details['zip_dir']);
+                }
+
                 $excludes = isset($details['exclude']) && count($details['exclude'])
                     ? sprintf(' -x \*%s\*', implode('\* -x \*', $details['exclude']))
                     : '';
