@@ -19,11 +19,12 @@ class HandshakeCommand extends BaseCommand
     }
 
     protected function execute(InputInterface $input, OutputInterface $output)
-    {   
+    {
         $this->rejectIfSecured();
         $this->generateCredentials();
         $this->secureDirectory();
-        $this->respond();
+
+        $this->respondWithSuccess();
     }
 
     private function rejectIfSecured()
@@ -48,9 +49,12 @@ class HandshakeCommand extends BaseCommand
 
     private function secureDirectory()
     {
-        file_put_contents('.htpasswd', $this->username . ':' . $this->encryptedPassword);
+        try {
+            if (!file_put_contents('.htpasswd', $this->username . ':' . $this->encryptedPassword)) {
+                throw new Exception("Could not write .htpasswd file");
+            }
 
-        $htaccessContents = '
+            $htaccessContents = '
 AuthType Basic
 AuthName "Password Protected Area"
 AuthUserFile ' . getcwd() . '/.htpasswd
@@ -62,11 +66,16 @@ Require valid-user
 </files>
 ';
     
-        file_put_contents('.htaccess', $htaccessContents);
+            if (!file_put_contents('.htaccess', $htaccessContents)) {
+                throw new Exception("Could not write .htaccess file");
+            }
+        } catch (\Exception $e) {
+            $this->sendErrorResponse($e->getMessage());
+        }
 
     }
 
-    private function respond() 
+    private function respondWithSuccess() 
     {
         $this->sendSuccessResponse([
             'message' => 'Tool was secured, credentials are attached',
