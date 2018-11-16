@@ -40,7 +40,7 @@ class SnapshotPullCommand extends SnapshotPull
         try {
             $this->_storage->pull($destination, $localFilePath, $storage);
         } catch (\Exception $e) {
-            // it's not really a problem if it fails to download something
+            $this->sendErrorResponse($e->getMessage());
         }
     }   
 }

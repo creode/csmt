@@ -20,7 +20,9 @@ class AwsS3 implements Storage
     public function pull($source, $dest, array $storageDetails)
     {
         if (!file_exists(dirname($dest))) {
-            mkdir(dirname($dest), 0755, true);
+            if (!mkdir(dirname($dest), 0755, true)) {
+                throw new \Exception("Could not create directory " . dirname($dest));
+            }
         }
         
         $client = $this->connect($storageDetails);

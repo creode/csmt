@@ -94,7 +94,7 @@ class BaseCommand extends Command
             throw new \Exception('Project name config node not found');
         }
 
-        return sys_get_temp_dir() . DIRECTORY_SEPARATOR . $project['name'] . DIRECTORY_SEPARATOR;
+        return sys_get_temp_dir() . DIRECTORY_SEPARATOR . 'backups-csmt' . DIRECTORY_SEPARATOR . $project['name'] . DIRECTORY_SEPARATOR;
     }
 
     /**
