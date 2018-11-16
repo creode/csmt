@@ -73,6 +73,12 @@ abstract class SnapshotDetails extends Snapshot
     {
         $localStorageDirectory = $this->getLocalStorageDir() . $details['remote_dir'];
 
+        if (!file_exists($localStorageDirectory)) {
+            if (!mkdir($localStorageDirectory, 0755, true)) {
+                throw new \Exception("Could not create tmp directory - $localStorageDirectory");
+            }
+        }
+
         $finder = new Finder();
         $finder->files()->in($localStorageDirectory)->sortByName();
 
