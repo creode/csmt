@@ -2,19 +2,45 @@
 
 namespace Creode\Csmt\Storage\Remote;
 
+use Aws\Common\Exception\MultipartUploadException;
+use Aws\S3\MultipartUploader;
+use Aws\S3\S3Client;
 use Creode\Csmt\Storage\Storage;
 
 class AwsS3 implements Storage
 {
+    const ONE_HUNDRED_MB = 104857600;
+
     public function push($source, $dest, array $storageDetails)
+    {
+        if(filesize($source) > ONE_HUNDRED_MB) {
+            $this->pushLargeFile($source, $dest, $storageDetails);
+        } else {
+            $this->pushSmallFile($source, $dest, $storageDetails);
+        }
+    }
+
+    private function pushSmallFile($source, $dest, array $storageDetails)
     {
         $client = $this->connect($storageDetails);
 
-        $result = $client->putObject([
+        $client->putObject([
             'Bucket'     => $storageDetails['bucket'],
             'Key'        => $dest,
             'SourceFile' => $source,
         ]);
+    }
+
+    private function pushLargeFile($source, $dest, array $storageDetails)
+    {   
+        $client = $this->connect($storageDetails);
+
+        $uploader = new MultipartUploader($client, $source, [
+            'bucket' => $storageDetails['bucket'],
+            'key'    => $dest
+        ]);
+
+        $result = $uploader->upload();
     }
 
     public function pull($source, $dest, array $storageDetails)
@@ -91,7 +117,7 @@ class AwsS3 implements Storage
             throw new \Exception('S3 config requires access, secret, bucket and region nodes to be defined');
         }
 
-        $client = new \Aws\S3\S3Client([
+        $client = new S3Client([
             'region'  => $storageDetails['region'],
             'version' => 'latest',
             'credentials' => [
