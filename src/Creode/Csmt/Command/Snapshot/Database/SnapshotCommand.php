@@ -9,7 +9,8 @@ class SnapshotCommand extends SnapshotTaker
 {
     const STRUCTURE_FILENAME = '01_structure.sql';
     const DATA_FILENAME = '02_data.sql';
-    const OBFUSCATED_DATA_FILENAME = '03_data_obfuscated.sql';
+    const OBFUSCATED_STRUCTURE_FILENAME = '03_structure_obfuscated.sql';
+    const OBFUSCATED_DATA_FILENAME = '04_data_obfuscated.sql';
     const OBFUSCATION_MANIFEST = 'manifest.yml';
 
     protected function configure()
@@ -35,6 +36,7 @@ class SnapshotCommand extends SnapshotTaker
                 foreach($databases as $name => $config) {
                     $this->takeStructureSnapshot($config);
                     $this->takeDataSnapshot($config);
+                    $this->takeObfuscatedStructureSnapshot($config);
                     $this->takeObfuscatedDataSnapshot($config);
                 }
             }
@@ -98,6 +100,42 @@ class SnapshotCommand extends SnapshotTaker
     }
 
 
+    private function takeObfuscatedStructureSnapshot($config) {
+        $tables = [];
+
+        if (!isset($config['data']['obfuscate']) 
+        || !isset($config['storage']['obfuscated'])
+        ) {
+            return;
+        }
+
+        if (isset($config['data'])) {
+            foreach($config['data']['obfuscate'] as $table) {
+                foreach($table as $name => $fields) {
+                    $tables[] = $name;
+                }
+            }
+        }
+
+        $localFilename = self::OBFUSCATED_STRUCTURE_FILENAME;
+        $localFile = $this->getLocalStorageDir() . $localFilename;
+
+        // TODO: This shouldn't always be mysql
+        $cmd = 'mysqldump --no-data -h ' . $config['host'] . ' -u ' . $config['user'] . " -p'" . $config['pass'] . "' " . $config['name'] . ' ' . implode(' ', $tables) . ' > ' . $localFile;
+        exec($cmd);
+
+        $project = $this->_config->get('project');
+        $storagePrefix = $project['name'] . DIRECTORY_SEPARATOR;
+
+        $this->pushToStorage(
+            $localFile,
+            $storagePrefix . $config['remote_dir'],
+            $localFilename,
+            $config['storage']['obfuscated']
+        );
+    }
+
+
     private function takeObfuscatedDataSnapshot($config) {
         $tables = [];
 
@@ -119,7 +157,7 @@ class SnapshotCommand extends SnapshotTaker
         $localFile = $this->getLocalStorageDir() . $localFilename;
 
         // TODO: This shouldn't always be mysql
-        $cmd = 'mysqldump --skip-extended-insert -h ' . $config['host'] . ' -u ' . $config['user'] . " -p'" . $config['pass'] . "' " . $config['name'] . ' ' . implode(' ', $tables) . ' > ' . $localFile;
+        $cmd = 'mysqldump --no-create-info --skip-extended-insert -h ' . $config['host'] . ' -u ' . $config['user'] . " -p'" . $config['pass'] . "' " . $config['name'] . ' ' . implode(' ', $tables) . ' > ' . $localFile;
         exec($cmd);
 
         $project = $this->_config->get('project');
@@ -149,7 +187,8 @@ class SnapshotCommand extends SnapshotTaker
                 'access' => $generalStorageDetails['access'],
                 'secret' => $generalStorageDetails['secret'],
                 'dir' => $config['remote_dir'],
-                'filename' => self::OBFUSCATED_DATA_FILENAME
+                'structure_filename' => self::OBFUSCATED_STRUCTURE_FILENAME,
+                'data_filename' => self::OBFUSCATED_DATA_FILENAME
             ],
             'data' => $config['data']['obfuscate']
         );
