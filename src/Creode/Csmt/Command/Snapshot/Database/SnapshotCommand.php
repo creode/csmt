@@ -86,7 +86,7 @@ class SnapshotCommand extends SnapshotTaker
         $localFile = $this->getLocalStorageDir() . $localFilename;
 
         // TODO: This shouldn't always be mysql
-        $cmd = 'mysqldump --no-create-info ' . implode(' ', $additionalParams) . ' -h ' . $config['host'] . ' -u ' . $config['user'] . " -p'" . $config['pass'] . "' " . $config['name'] . ' > ' . $localFile;
+        $cmd = 'mysqldump --no-create-info --extended-insert ' . implode(' ', $additionalParams) . ' -h ' . $config['host'] . ' -u ' . $config['user'] . " -p'" . $config['pass'] . "' " . $config['name'] . ' > ' . $localFile;
         exec($cmd);
 
         $this->pushToStorage(
@@ -119,7 +119,7 @@ class SnapshotCommand extends SnapshotTaker
         $localFile = $this->getLocalStorageDir() . $localFilename;
 
         // TODO: This shouldn't always be mysql
-        $cmd = 'mysqldump -h ' . $config['host'] . ' -u ' . $config['user'] . " -p'" . $config['pass'] . "' " . $config['name'] . ' ' . implode(' ', $tables) . ' > ' . $localFile;
+        $cmd = 'mysqldump --extended-insert -h ' . $config['host'] . ' -u ' . $config['user'] . " -p'" . $config['pass'] . "' " . $config['name'] . ' ' . implode(' ', $tables) . ' > ' . $localFile;
         exec($cmd);
 
         $project = $this->_config->get('project');
