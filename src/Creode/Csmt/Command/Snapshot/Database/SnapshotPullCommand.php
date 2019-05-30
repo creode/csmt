@@ -20,6 +20,7 @@ class SnapshotPullCommand extends SnapshotPull
             foreach($databases as $filename => $databaseDetails) {
                 $this->pullFromStorage(SnapshotCommand::STRUCTURE_FILENAME, $databaseDetails);
                 $this->pullFromStorage(SnapshotCommand::DATA_FILENAME, $databaseDetails);
+                $this->pullFromStorage(SnapshotCommand::OBFUSCATED_STRUCTURE_FILENAME, $databaseDetails);
                 $this->pullFromStorage(SnapshotCommand::OBFUSCATED_DATA_FILENAME, $databaseDetails);
             }
         }
