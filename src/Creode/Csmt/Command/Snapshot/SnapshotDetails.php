@@ -52,6 +52,11 @@ abstract class SnapshotDetails extends Snapshot
         $info = $this->_storage->info($details['remote_dir'], $storage);
 
         foreach($info as $remoteFile) {
+            // exclude directories
+            if (substr($remoteFile['Key'], -1) == '/') {
+                continue;
+            }
+            
             $file = new \Creode\Csmt\System\File($remoteFile['Key']);
 
             $dateTime = \DateTime::createFromFormat(\DateTime::ISO8601, $remoteFile['LastModified']);
