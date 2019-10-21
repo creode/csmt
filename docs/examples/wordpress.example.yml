@@ -1,0 +1,45 @@
+environment: test # live or test
+project:
+ name: project # machine name of project i.e. lowercase with underscores
+databases:
+ website:
+  host: localhost # database hosts
+  name: db_name # database name
+  pass: db_pass # database password
+  user: db_user # database user
+  data:
+   exclude: # data to exclude from the backup
+    - wp_termmeta
+    - wp_commentmeta
+   obfuscate: # list of obfuscated tables and fields
+    - wp_users: # table to obfuscate
+        string: # field type
+         - user_login # name of field
+         - user_nicename
+         - display_name
+        email:
+         - user_email
+  remote_dir: databases_[site_name] # remote db - usually left to default of databases
+  storage:
+    general: general_s3
+    obfuscated: obfuscated_s3
+filesystem:
+ files: 
+    zip_dir: uploads # the directory to zip up, it should be just the directory name, the path is 'parent_dir'
+  parent_dir: /var/www/html # the directory above the one to zip (see 'zip_dir' above)
+  remote_dir: files # name of directory data goes to.
+  exclude:
+    - cache
+  storage:
+   general: general_s3
+storage:
+  general_s3:
+    access: access_key
+    secret: access_secret
+    bucket: bucket_name # name of bucket to backup to
+    region: eu-west-2
+  obfuscated_s3:
+    access: access_key
+    secret: access_secret
+    bucket: obfuscated.creode.raw # name of bucket for obfuscation
+    region: eu-west-2
