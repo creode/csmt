@@ -25,7 +25,7 @@ databases:
     obfuscated: obfuscated_s3
 filesystem:
  files: 
-    zip_dir: uploads # the directory to zip up, it should be just the directory name, the path is 'parent_dir'
+  zip_dir: uploads # the directory to zip up, it should be just the directory name, the path is 'parent_dir'
   parent_dir: /var/www/html # the directory above the one to zip (see 'zip_dir' above)
   remote_dir: files # name of directory data goes to.
   exclude:
