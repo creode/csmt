@@ -15,6 +15,11 @@ PROJECTNAME=csmt
 #
 # Tag & build master branch
 #
+echo 'checking ulimit value'
+ulimit -n
+echo 'setting ulimit to 10000'
+ulimit -n 10000
+
 git checkout master
 git push
 git tag ${TAG}
