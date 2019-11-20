@@ -24,6 +24,7 @@ class SnapshotDownloadCommand extends SnapshotDownload
             foreach($databases as $filename => $databaseDetails) {
                 $this->addFileToDownload($links, SnapshotCommand::STRUCTURE_FILENAME, $duration, $databaseDetails);
                 $this->addFileToDownload($links, SnapshotCommand::DATA_FILENAME, $duration, $databaseDetails);
+                $this->addFileToDownload($links, SnapshotCommand::OBFUSCATED_STRUCTURE_FILENAME, $duration, $databaseDetails);
                 $this->addFileToDownload($links, SnapshotCommand::OBFUSCATED_DATA_FILENAME, $duration, $databaseDetails);
             }
         }
